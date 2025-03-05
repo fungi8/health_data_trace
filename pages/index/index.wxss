@@ -1,0 +1,48 @@
+/* 全局样式 */
+page {
+  background-color: #f8f8f8;
+  font-family: Arial, sans-serif;
+}
+
+/* 顶部标题 */
+.header {
+  background-color: #007aff;
+  padding: 20rpx;
+  text-align: center;
+}
+
+.title {
+  color: #ffffff;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+/* 主内容区域 */
+.main-content {
+  padding: 20rpx;
+}
+
+/* 概览卡片 */
+.overview {
+  margin-bottom: 20rpx;
+}
+
+.overview text {
+  display: block;
+  font-size: 28rpx;
+  margin: 10rpx 0;
+}
+
+/* 记录数据表单 */
+.record-form {
+  padding: 20rpx;
+}
+
+.record-form .van-field {
+  margin-bottom: 20rpx;
+}
+
+/* 个人中心 */
+.profile {
+  padding: 20rpx;
+}

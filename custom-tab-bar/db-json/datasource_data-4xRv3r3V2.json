@@ -1,0 +1,222 @@
+{
+    "previewTableName": "blood_pressure_records-preview",
+    "publishCacheStatus": "ready",
+    "subType": "database",
+    "schema": {
+        "x-primary-column": "_id",
+        "x-kind": "tcb",
+        "x-defaultMethods": [
+            "wedaCreate",
+            "wedaUpdate",
+            "wedaDelete",
+            "wedaGetItem",
+            "wedaGetRecords",
+            "wedaGetList",
+            "wedaBatchCreate",
+            "wedaBatchUpdate",
+            "wedaBatchDelete"
+        ],
+        "type": "object",
+        "x-relatedType": "exist",
+        "x-viewId": "view-6l67an6mhc",
+        "required": [],
+        "properties": {
+            "owner": {
+                "default": "",
+                "x-system": true,
+                "x-id": "db32bd1",
+                "name": "owner",
+                "format": "father-son",
+                "pattern": "",
+                "x-index": 4,
+                "title": "所有人",
+                "type": "string",
+                "x-unique": false,
+                "x-parent": {
+                    "fatherAction": "judge",
+                    "type": "father-son",
+                    "parentDataSourceName": "sys_user"
+                }
+            },
+            "note": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "4e7fa382",
+                "format": "",
+                "description": "备注",
+                "type": "string",
+                "x-index": 10,
+                "title": "note",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "_departmentList": {
+                "default": "",
+                "x-system": true,
+                "x-id": "4cd702b",
+                "format": "",
+                "name": "_departmentList",
+                "title": "所属部门",
+                "type": "array",
+                "x-index": 7,
+                "items": {
+                    "type": "string"
+                },
+                "x-unique": false
+            },
+            "createdAt": {
+                "default": 0,
+                "x-system": true,
+                "x-id": "a222858",
+                "format": "datetime",
+                "x-index": 2,
+                "type": "number",
+                "title": "创建时间",
+                "x-unique": false
+            },
+            "datetime": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "ad93f3aa",
+                "format": "",
+                "description": "",
+                "type": "string",
+                "x-index": 12,
+                "title": "datetime",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "createBy": {
+                "default": "",
+                "x-system": true,
+                "x-id": "b0387b9",
+                "name": "createBy",
+                "format": "father-son",
+                "pattern": "",
+                "x-index": 5,
+                "type": "string",
+                "title": "创建人",
+                "x-unique": false,
+                "x-parent": {
+                    "fatherAction": "judge",
+                    "type": "father-son",
+                    "parentDataSourceName": "sys_user"
+                }
+            },
+            "systolic": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "93244b4f",
+                "format": "",
+                "description": "收缩压",
+                "type": "string",
+                "x-index": 2,
+                "title": "systolic",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "diastolic": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "c23ec661",
+                "format": "",
+                "description": "舒张压",
+                "type": "string",
+                "x-index": 4,
+                "title": "diastolic",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "updateBy": {
+                "default": "",
+                "x-system": true,
+                "x-id": "93a079a",
+                "name": "updateBy",
+                "format": "father-son",
+                "pattern": "",
+                "x-index": 6,
+                "type": "string",
+                "title": "修改人",
+                "x-unique": false,
+                "x-parent": {
+                    "fatherAction": "judge",
+                    "type": "father-son",
+                    "parentDataSourceName": "sys_user"
+                }
+            },
+            "_openid": {
+                "default": "",
+                "x-system": true,
+                "x-id": "d510663",
+                "name": "_openid",
+                "format": "",
+                "pattern": "",
+                "description": "仅微信云开发下使用",
+                "x-index": 45,
+                "title": "记录创建者",
+                "type": "string",
+                "x-unique": false
+            },
+            "pulse": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "73b3984c",
+                "format": "",
+                "description": "脉搏",
+                "type": "string",
+                "x-index": 6,
+                "title": "pulse",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "_id": {
+                "default": "",
+                "x-system": true,
+                "x-id": "0376743",
+                "format": "",
+                "pattern": "",
+                "x-index": 1,
+                "type": "string",
+                "title": "数据标识",
+                "x-unique": true
+            },
+            "status": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "71edf964",
+                "format": "",
+                "description": "状态：正常、偏高等",
+                "type": "string",
+                "x-index": 8,
+                "title": "status",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "updatedAt": {
+                "default": 0,
+                "x-system": true,
+                "x-id": "89117f5",
+                "format": "datetime",
+                "x-index": 3,
+                "title": "更新时间",
+                "type": "number",
+                "x-unique": false
+            }
+        }
+    },
+    "dbInstanceType": "FLEXDB",
+    "title": "blood_pressure_records",
+    "name": "blood_pressure_records",
+    "dbLinkType": "internal",
+    "tableNameRule": "only_name",
+    "type": "database",
+    "childDataSourceNames": null,
+    "updateTime": "2025-03-05T07:30:37",
+    "publishedTableName": "blood_pressure_records",
+    "id": "data-4xRv3r3V2",
+    "dbSourceType": "internal_flexdb",
+    "methods": [],
+    "fun": "{\"onlineVersion\": 2, \"previewVersion\": 1, \"onlinePublishAt\": 1741159837086, \"prviewPublishAt\": 1741159834706}",
+    "publishStatus": 1,
+    "configuration": {}
+}

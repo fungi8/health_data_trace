@@ -1,0 +1,48 @@
+<view class="container">
+  <!-- 顶部状态栏 -->
+  <view class="header">
+    <text class="title">健康数据追踪</text>
+  </view>
+
+  <!-- 主要内容区域 -->
+  <view class="main-content">
+    <van-tabs active="{{ active }}" bind:change="onTabChange">
+      <!-- 首页 -->
+      <van-tab title="首页">
+        <view class="overview">
+          <van-card title="今日数据" desc="健康数据概览">
+            <text>血压: 120/80 mmHg</text>
+            <text>晨起心率: 72 bpm</text>
+            <text>体重: 65 kg</text>
+          </van-card>
+        </view>
+      </van-tab>
+
+      <!-- 记录数据 -->
+      <van-tab title="记录数据">
+        <view class="record-form">
+          <van-field label="血压" placeholder="请输入血压值" bindinput="onInput" data-field="bloodPressure" />
+          <van-field label="心率" placeholder="请输入心率" bindinput="onInput" data-field="heartRate" />
+          <van-field label="体重" placeholder="请输入体重" bindinput="onInput" data-field="weight" />
+          <van-button type="primary" block bindtap="submitData">提交</van-button>
+        </view>
+      </van-tab>
+
+      <!-- 个人中心 -->
+      <van-tab title="个人中心">
+        <view class="profile">
+          <van-cell title="用户信息" label="点击查看详情" />
+          <van-cell title="设置" is-link />
+          <van-cell title="关于我们" is-link />
+        </view>
+      </van-tab>
+    </van-tabs>
+  </view>
+
+  <!-- 底部 TabBar -->
+  <van-tabbar active="{{ active }}" bind:change="onTabChange">
+    <van-tabbar-item icon="home-o">首页</van-tabbar-item>
+    <van-tabbar-item icon="edit">记录</van-tabbar-item>
+    <van-tabbar-item icon="user-o">个人中心</van-tabbar-item>
+  </van-tabbar>
+</view>

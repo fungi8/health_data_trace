@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康管家 - 排便记录</title>
+    <!-- 引入 Ant Design 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.15/antd.min.css" />
+    <!-- 引入 Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2D89EF;
+            --warning-color: #D13438;
+            --success-color: #107C10;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --secondary-text: #666666;
+            --border-radius: 8px;
+            --spacing-unit: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-unit);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            padding: calc(var(--spacing-unit) * 2) 0;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            text-align: center;
+            flex: 1;
+        }
+
+        .save-button {
+            padding: calc(var(--spacing-unit)) calc(var(--spacing-unit) * 2);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .save-button:hover {
+            background-color: #1a73e8;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .date-time-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .date-selector, .time-selector {
+            flex: 1;
+        }
+
+        .date-selector {
+            margin-right: calc(var(--spacing-unit));
+        }
+
+        .input-label {
+            display: block;
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin-bottom: calc(var(--spacing-unit));
+        }
+
+        .input-field {
+            width: 100%;
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(45, 137, 239, 0.2);
+            outline: none;
+        }
+
+        .bristol-selector {
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .bristol-guide {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit));
+        }
+
+        .bristol-help-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .bristol-help-link .material-icons-round {
+            font-size: 16px;
+            margin-right: 4px;
+        }
+
+        .bristol-types {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: calc(var(--spacing-unit));
+        }
+
+        .bristol-type {
+            border: 2px solid #e8e8e8;
+            border-radius: var(--border-radius);
+            text-align: center;
+            padding: calc(var(--spacing-unit));
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bristol-type:hover, .bristol-type.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(45, 137, 239, 0.05);
+        }
+
+        .bristol-type.selected {
+            border-width: 2px;
+        }
+
+        .bristol-image {
+            width: 100%;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: calc(var(--spacing-unit) / 2);
+        }
+
+        .bristol-image img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .bristol-number {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .abnormal-options {
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .option-title {
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin-bottom: calc(var(--spacing-unit));
+        }
+
+        .checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            margin-right: calc(var(--spacing-unit) * 2);
+            margin-bottom: calc(var(--spacing-unit));
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            margin-right: calc(var(--spacing-unit) / 2);
+        }
+
+        .duration-selector {
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .duration-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: calc(var(--spacing-unit));
+        }
+
+        .duration-option {
+            flex: 1;
+            min-width: 60px;
+            padding: calc(var(--spacing-unit));
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .duration-option:hover, .duration-option.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(45, 137, 239, 0.05);
+        }
+
+        .duration-option.selected {
+            border-width: 2px;
+        }
+
+        .additional-notes {
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .textarea-field {
+            width: 100%;
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: all 0.3s;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .textarea-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(45, 137, 239, 0.2);
+            outline: none;
+        }
+
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+                --secondary-text: #a0a0a0;
+            }
+
+            .input-field, .textarea-field {
+                background-color: #2c2c2c;
+                border-color: #444;
+                color: #e0e0e0;
+            }
+
+            .bristol-type {
+                border-color: #444;
+            }
+
+            .duration-option {
+                border-color: #444;
+                background-color: #2c2c2c;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="dashboard.html" class="back-button">
+                <span class="material-icons-round">arrow_back</span>
+                <span style="margin-left: 4px;">返回</span>
+            </a>
+            <h1 class="page-title">排便记录</h1>
+            <button class="save-button" onclick="saveRecord()">保存</button>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">calendar_today</span>
+                日期与时间
+            </h2>
+            <div class="date-time-selector">
+                <div class="date-selector">
+                    <label for="date" class="input-label">日期</label>
+                    <input type="date" id="date" class="input-field" value="2023-07-20">
+                </div>
+                <div class="time-selector">
+                    <label for="time" class="input-label">时间</label>
+                    <input type="time" id="time" class="input-field" value="08:30">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">healing</span>
+                排便类型
+            </h2>
+            <div class="bristol-selector">
+                <div class="bristol-guide">
+                    <label class="input-label">选择Bristol大便分类</label>
+                    <a href="bristol-stool-chart.html" class="bristol-help-link">
+                        <span class="material-icons-round">help_outline</span>
+                        了解更多
+                    </a>
+                </div>
+                <div class="bristol-types">
+                    <!-- Bristol 类型选择器 -->
+                    <div class="bristol-type" onclick="selectBristolType(1)">
+                        <div class="bristol-image">
+                            <img src="static/images/bristol-1.png" alt="Type 1">
+                        </div>
+                        <div class="bristol-number">1</div>
+                    </div>
+                    <div class="bristol-type" onclick="selectBristolType(2)">
+                        <div class="bristol-image">
+                            <img src="static/images/bristol-2.png" alt="Type 2">
+                        </div>
+                        <div class="bristol-number">2</div>
+                    </div>
+                    <div class="bristol-type" onclick="selectBristolType(3)">
+                        <div class="bristol-image">
+                            <img src="static/images/bristol-3.png" alt="Type 3">
+                        </div>
+                        <div class="bristol-number">3</div>
+                    </div>
+                    <div class="bristol-type selected" onclick="selectBristolType(4)">
+                        <div class="bristol-image">
+                            <img src="static/images/bristol-4.png" alt="Type 4">
+                        </div>
+                        <div class="bristol-number">4</div>
+                    </div>
+                    <div class="bristol-type" onclick="selectBristolType(5)">
+                        <div class="bristol-image">
+                            <img src="static/images/bristol-5.png" alt="Type 5">
+                        </div>
+                        <div class="bristol-number">5</div>
+                    </div>
+                    <div class="bristol-type" onclick="selectBristolType(6)">
+                        <div class="bristol-image">
+                            <img src="static/images/bristol-6.png" alt="Type 6">
+                        </div>
+                        <div class="bristol-number">6</div>
+                    </div>
+                    <div class="bristol-type" onclick="selectBristolType(7)">
+                        <div class="bristol-image">
+                            <img src="static/images/bristol-7.png" alt="Type 7">
+                        </div>
+                        <div class="bristol-number">7</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="abnormal-options">
+                <div class="option-title">异常情况（如有）</div>
+                <div class="checkboxes">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="blood"> 出血
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="mucus"> 黏液
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="pain"> 疼痛
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="difficulty"> 排便困难
+                    </label>
+                </div>
+            </div>
+
+            <div class="duration-selector">
+                <div class="option-title">排便时长</div>
+                <div class="duration-options">
+                    <div class="duration-option" onclick="selectDuration('less1')">少于1分钟</div>
+                    <div class="duration-option" onclick="selectDuration('1-3')">1-3分钟</div>
+                    <div class="duration-option selected" onclick="selectDuration('3-5')">3-5分钟</div>
+                    <div class="duration-option" onclick="selectDuration('5-10')">5-10分钟</div>
+                    <div class="duration-option" onclick="selectDuration('more10')">10分钟以上</div>
+                </div>
+            </div>
+
+            <div class="additional-notes">
+                <label for="notes" class="input-label">备注（可选）</label>
+                <textarea id="notes" class="textarea-field" placeholder="输入任何其他相关信息..."></textarea>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 函数：选择Bristol类型
+        function selectBristolType(type) {
+            // 移除所有类型的选中状态
+            document.querySelectorAll('.bristol-type').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // 给选中的类型添加选中状态
+            document.querySelectorAll('.bristol-type')[type - 1].classList.add('selected');
+        }
+
+        // 函数：选择排便时长
+        function selectDuration(duration) {
+            // 移除所有时长选项的选中状态
+            document.querySelectorAll('.duration-option').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // 匹配选中的时长选项
+            const durationMap = {
+                'less1': 0,
+                '1-3': 1,
+                '3-5': 2,
+                '5-10': 3,
+                'more10': 4
+            };
+            
+            // 给选中的时长选项添加选中状态
+            document.querySelectorAll('.duration-option')[durationMap[duration]].classList.add('selected');
+        }
+
+        // 函数：保存记录
+        function saveRecord() {
+            // 获取选中的Bristol类型
+            const selectedBristolType = document.querySelector('.bristol-type.selected');
+            const bristolTypeIndex = Array.from(document.querySelectorAll('.bristol-type')).indexOf(selectedBristolType) + 1;
+            
+            // 获取异常情况
+            const abnormalities = [];
+            if (document.getElementById('blood').checked) abnormalities.push('出血');
+            if (document.getElementById('mucus').checked) abnormalities.push('黏液');
+            if (document.getElementById('pain').checked) abnormalities.push('疼痛');
+            if (document.getElementById('difficulty').checked) abnormalities.push('排便困难');
+            
+            // 获取排便时长
+            const selectedDuration = document.querySelector('.duration-option.selected');
+            const durationText = selectedDuration.innerText;
+            
+            // 获取日期、时间和备注
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const notes = document.getElementById('notes').value;
+            
+            // 构建记录数据对象
+            const record = {
+                date,
+                time,
+                bristolType: bristolTypeIndex,
+                abnormalities,
+                duration: durationText,
+                notes
+            };
+            
+            // 模拟保存操作（实际应用中应该调用API或保存到本地存储）
+            console.log('记录已保存:', record);
+            
+            // 显示保存成功提示
+            alert('记录已保存!');
+            
+            // 返回主页
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

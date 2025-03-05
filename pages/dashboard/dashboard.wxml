@@ -1,0 +1,136 @@
+<view class="container">
+  <view class="header">
+    <view class="user-profile">
+      <view class="avatar">{{userInfo.name ? userInfo.name.substring(0, 1) : '用'}}</view>
+      <view class="user-info">
+        <view class="user-name">{{userInfo.name || '用户'}}</view>
+        <view class="user-status">上次记录: {{lastRecordTime}}</view>
+      </view>
+    </view>
+    <view bindtap="goToSettings">
+      <van-icon name="setting-o" size="24px" color="#666666" />
+    </view>
+  </view>
+
+  <view class="welcome-card">
+    <view class="welcome-title">{{greeting}}，{{userInfo.name || '用户'}}</view>
+    <view class="welcome-subtitle">{{welcomeMessage}}</view>
+  </view>
+
+  <view class="card">
+    <view class="card-header">
+      <view class="card-title">
+        <van-icon name="like-o" size="18px" color="#2D89EF" style="margin-right: 8rpx;" />
+        最近血压记录
+      </view>
+      <view class="view-all" bindtap="viewAllBloodPressure">查看全部</view>
+    </view>
+    
+    <block wx:if="{{bloodPressureRecords.length > 0}}">
+      <view class="record-item" wx:for="{{bloodPressureRecords}}" wx:key="id">
+        <view class="record-icon">
+          <van-icon name="like-o" size="20px" color="#2D89EF" />
+        </view>
+        <view class="record-info">
+          <view class="record-value">
+            {{item.value}} mmHg 
+            <text class="record-status {{item.status === '正常' ? 'normal' : 'warning'}}">{{item.status}}</text>
+          </view>
+          <view class="record-date">{{item.date}}</view>
+        </view>
+      </view>
+    </block>
+    <block wx:else>
+      <view style="text-align: center; padding: 32rpx 0; color: #999;">
+        暂无记录，点击下方"+"按钮添加
+      </view>
+    </block>
+  </view>
+
+  <view class="card">
+    <view class="card-header">
+      <view class="card-title">
+        <van-icon name="bell" size="18px" color="#2D89EF" style="margin-right: 8rpx;" />
+        今日提醒
+      </view>
+      <view class="view-all" bindtap="manageReminders">管理提醒</view>
+    </view>
+    
+    <block wx:if="{{reminders.length > 0}}">
+      <view class="record-item" wx:for="{{reminders}}" wx:key="id">
+        <view class="record-icon">
+          <van-icon name="bell" size="20px" color="#2D89EF" />
+        </view>
+        <view class="record-info">
+          <view class="record-value">{{item.title}}</view>
+          <view class="record-date">{{item.time}}</view>
+        </view>
+      </view>
+    </block>
+    <block wx:else>
+      <view style="text-align: center; padding: 32rpx 0; color: #999;">
+        暂无提醒，前往"提醒"页面添加
+      </view>
+    </block>
+  </view>
+
+  <view class="section-title">
+    <van-icon name="apps-o" size="18px" color="#2D89EF" style="margin-right: 8rpx;" />
+    健康管理
+  </view>
+
+  <view class="card-grid">
+    <view class="feature-card" bindtap="goToDataVisualization">
+      <view class="feature-icon">
+        <van-icon name="chart-trending-o" size="24px" color="#2D89EF" />
+      </view>
+      <view class="feature-title">数据可视化</view>
+      <view class="feature-desc">查看健康趋势</view>
+    </view>
+    
+    <view class="feature-card" bindtap="goToDataManagement">
+      <view class="feature-icon">
+        <van-icon name="records" size="24px" color="#2D89EF" />
+      </view>
+      <view class="feature-title">数据管理</view>
+      <view class="feature-desc">管理健康记录</view>
+    </view>
+    
+    <view class="feature-card" bindtap="goToReminders">
+      <view class="feature-icon">
+        <van-icon name="bell" size="24px" color="#2D89EF" />
+      </view>
+      <view class="feature-title">健康提醒</view>
+      <view class="feature-desc">设置提醒事项</view>
+    </view>
+    
+    <view class="feature-card" bindtap="goToReports">
+      <view class="feature-icon">
+        <van-icon name="description" size="24px" color="#2D89EF" />
+      </view>
+      <view class="feature-title">健康报告</view>
+      <view class="feature-desc">生成健康报告</view>
+    </view>
+  </view>
+
+  <!-- 添加记录按钮 -->
+  <view class="add-button" bindtap="showAddMenu">
+    <van-icon name="plus" size="24px" color="#ffffff" />
+  </view>
+
+  <!-- 添加记录菜单 -->
+  <van-popup
+    show="{{ showAddMenu }}"
+    position="bottom"
+    round
+    custom-style="padding-bottom: 32rpx;"
+    bind:close="hideAddMenu"
+  >
+    <view style="padding: 32rpx 32rpx 16rpx; font-size: 32rpx; font-weight: 600;">添加记录</view>
+    
+    <van-cell title="血压记录" icon="like-o" is-link bindtap="goToBloodPressure" />
+    <van-cell title="体重记录" icon="balance-o" is-link bindtap="goToWeightRecord" />
+    <van-cell title="大便记录" icon="flower-o" is-link bindtap="goToStoolRecord" />
+    <van-cell title="用药记录" icon="medicine-box-o" is-link bindtap="goToMedication" />
+  </van-popup>
+</view>

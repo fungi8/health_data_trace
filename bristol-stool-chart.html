@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康管家 - Bristol大便分类法</title>
+    <!-- 引入 Ant Design 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.15/antd.min.css" />
+    <!-- 引入 Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2D89EF;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --secondary-text: #666666;
+            --border-radius: 8px;
+            --spacing-unit: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-unit);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            padding: calc(var(--spacing-unit) * 2) 0;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            text-align: center;
+            flex: 1;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .bristol-intro {
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--secondary-text);
+        }
+
+        .bristol-types {
+            display: flex;
+            flex-direction: column;
+            gap: calc(var(--spacing-unit) * 2);
+        }
+
+        .bristol-type {
+            display: flex;
+            align-items: stretch;
+            border: 1px solid #e8e8e8;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .bristol-image {
+            width: 100px;
+            flex-shrink: 0;
+            background-color: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bristol-image img {
+            max-width: 80px;
+            max-height: 80px;
+        }
+
+        .bristol-info {
+            padding: calc(var(--spacing-unit) * 2);
+            flex: 1;
+        }
+
+        .bristol-type-title {
+            font-weight: 600;
+            margin-bottom: calc(var(--spacing-unit));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .bristol-type-level {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        .bristol-description {
+            font-size: 14px;
+            color: var(--secondary-text);
+            line-height: 1.6;
+        }
+
+        .bristol-indicator {
+            margin-top: calc(var(--spacing-unit));
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .indicator-normal {
+            color: var(--success-color);
+        }
+
+        .indicator-warning {
+            color: #FF9800;
+        }
+
+        .indicator-alert {
+            color: var(--warning-color);
+        }
+
+        .back-to-record {
+            text-align: center;
+            margin-top: calc(var(--spacing-unit) * 3);
+            margin-bottom: calc(var(--spacing-unit) * 3);
+        }
+
+        .back-to-record-button {
+            display: inline-block;
+            padding: calc(var(--spacing-unit)) calc(var(--spacing-unit) * 2);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+
+        .back-to-record-button:hover {
+            background-color: #1a73e8;
+        }
+
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+                --secondary-text: #a0a0a0;
+            }
+
+            .bristol-image {
+                background-color: #2c2c2c;
+            }
+
+            .bristol-type {
+                border-color: #333;
+            }
+
+            .bristol-type-level {
+                background-color: #333;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="stool-record.html" class="back-button">
+                <span class="material-icons-round">arrow_back</span>
+                <span style="margin-left: 4px;">返回</span>
+            </a>
+            <h1 class="page-title">Bristol大便分类法</h1>
+            <div style="width: 24px;"></div> <!-- 占位，保持标题居中 -->
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">什么是Bristol大便分类法？</h2>
+            <div class="bristol-intro">
+                <p>Bristol大便分类法是一种由英国布里斯托尔大学开发的医学评估工具，用于评估人体粪便的形状和稠度。它将人类排泄物分为七种类型，从硬块状到完全液态，帮助人们了解自己的肠道健康状况。</p>
+                <p>正常健康的大便通常属于第3型和第4型。其他类型可能表明肠道问题，如便秘、腹泻或其他消化系统疾病。</p>
+            </div>
+        </div>
+
+        <div class="bristol-types">
+            <div class="bristol-type">
+                <div class="bristol-image">
+                    <img src="static/images/bristol-1.png" alt="第1型">
+                </div>
+                <div class="bristol-info">
+                    <div class="bristol-type-title">
+                        第1型: 分离的硬块 <span class="bristol-type-level">极度便秘</span>
+                    </div>
+                    <div class="bristol-description">
+                        像坚果一样的小硬块，很难排出
+                    </div>
+                    <div class="bristol-indicator indicator-alert">
+                        <span class="material-icons-round" style="font-size: 14px; margin-right: 4px;">error</span>
+                        <span>表明肠道活动减慢，存在严重便秘</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bristol-type">
+                <div class="bristol-image">
+                    <img src="static/images/bristol-2.png" alt="第2型">
+                </div>
+                <div class="bristol-info">
+                    <div class="bristol-type-title">
+                        第2型: 成形且团块状 <span class="bristol-type-level">轻度便秘</span>
+                    </div>
+                    <div class="bristol-description">
+                        结块状、坚硬的便便，但还能保持成形
+                    </div>
+                    <div class="bristol-indicator indicator-warning">
+                        <span class="material-icons-round" style="font-size: 14px; margin-right: 4px;">warning</span>
+                        <span>表明轻度便秘，肠道蠕动缓慢</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bristol-type">
+                <div class="bristol-image">
+                    <img src="static/images/bristol-3.png" alt="第3型">
+                </div>
+                <div class="bristol-info">
+                    <div class="bristol-type-title">
+                        第3型: 带裂缝的香肠状 <span class="bristol-type-level">正常</span>
+                    </div>
+                    <div class="bristol-description">
+                        像香肠一样但表面有裂缝
+                    </div>
+                    <div class="bristol-indicator indicator-normal">
+                        <span class="material-icons-round" style="font-size: 14px; margin-right: 4px;">check_circle</span>
+                        <span>表明正常的肠道功能</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bristol-type">
+                <div class="bristol-image">
+                    <img src="static/images/bristol-4.png" alt="第4型">
+                </div>
+                <div class="bristol-info">
+                    <div class="bristol-type-title">
+                        第4型: 光滑的香肠状 <span class="bristol-type-level">理想状态</span>
+                    </div>
+                    <div class="bristol-description">
+                        像蛇一样光滑且柔软
+                    </div>
+                    <div class="bristol-indicator indicator-normal">
+                        <span class="material-icons-round" style="font-size: 14px; margin-right: 4px;">check_circle</span>
+                        <span>表明理想的肠道健康状态</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bristol-type">
+                <div class="bristol-image">
+                    <img src="static/images/bristol-5.png" alt="第5型">
+                </div>
+                <div class="bristol-info">
+                    <div class="bristol-type-title">
+                        第5型: 边缘清晰的软块 <span class="bristol-type-level">轻度腹泻</span>
+                    </div>
+                    <div class="bristol-description">
+                        边缘清晰的软块，很容易排出
+                    </div>
+                    <div class="bristol-indicator indicator-warning">
+                        <span class="material-icons-round" style="font-size: 14px; margin-right: 4px;">warning</span>
+                        <span>可能表明轻度腹泻或食物通过过快</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bristol-type">
+                <div class="bristol-image">
+                    <img src="static/images/bristol-6.png" alt="第6型">
+                </div>
+                <div class="bristol-info">
+                    <div class="bristol-type-title">
+                        第6型: 糊状且边缘不规则 <span class="bristol-type-level">中度腹泻</span>
+                    </div>
+                    <div class="bristol-description">
+                        蓬松状、糊状的便便，边缘不规则
+                    </div>
+                    <div class="bristol-indicator indicator-alert">
+                        <span class="material-icons-round" style="font-size: 14px; margin-right: 4px;">error</span>
+                        <span>表明腹泻，消化系统功能异常</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bristol-type">
+                <div class="bristol-image">
+                    <img src="static/images/bristol-7.png" alt="第7型">
+                </div>
+                <div class="bristol-info">
+                    <div class="bristol-type-title">
+                        第7型: 完全水样 <span class="bristol-type-level">严重腹泻</span>
+                    </div>
+                    <div class="bristol-description">
+                        完全水样，没有固体部分
+                    </div>
+                    <div class="bristol-indicator indicator-alert">
+                        <span class="material-icons-round" style="font-size: 14px; margin-right: 4px;">error</span>
+                        <span>表明严重腹泻，需要医疗关注</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-to-record">
+            <a href="stool-record.html" class="back-to-record-button">返回排便记录</a>
+        </div>
+    </div>
+</body>
+</html> 

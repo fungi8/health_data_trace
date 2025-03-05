@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康管家 - 创建提醒</title>
+    <!-- 引入 Ant Design 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.15/antd.min.css" />
+    <!-- 引入 Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2D89EF;
+            --warning-color: #D13438;
+            --success-color: #107C10;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --secondary-text: #666666;
+            --border-radius: 8px;
+            --spacing-unit: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-unit);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            padding: calc(var(--spacing-unit) * 2) 0;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            text-align: center;
+            flex: 1;
+        }
+
+        .save-button {
+            padding: calc(var(--spacing-unit)) calc(var(--spacing-unit) * 2);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .save-button:hover {
+            background-color: #1a73e8;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .input-label {
+            display: block;
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin-bottom: calc(var(--spacing-unit));
+        }
+
+        .input-field {
+            width: 100%;
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(45, 137, 239, 0.2);
+            outline: none;
+        }
+
+        .reminder-types {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: calc(var(--spacing-unit) * 2);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .reminder-type {
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reminder-type:hover, .reminder-type.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(45, 137, 239, 0.05);
+        }
+
+        .reminder-type.selected {
+            border-width: 2px;
+        }
+
+        .reminder-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(45, 137, 239, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto calc(var(--spacing-unit) * 2);
+        }
+
+        .reminder-title {
+            font-weight: 600;
+            margin-bottom: calc(var(--spacing-unit) / 2);
+        }
+
+        .reminder-desc {
+            font-size: 12px;
+            color: var(--secondary-text);
+        }
+
+        .time-selector {
+            display: flex;
+            gap: calc(var(--spacing-unit) * 2);
+        }
+
+        .time-selector-col {
+            flex: 1;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: calc(var(--spacing-unit));
+        }
+
+        .radio-button {
+            flex: 1;
+            min-width: 80px;
+            padding: calc(var(--spacing-unit));
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-button:hover, .radio-button.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(45, 137, 239, 0.05);
+        }
+
+        .radio-button.selected {
+            border-width: 2px;
+        }
+
+        .weekday-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .weekday-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid #d9d9d9;
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .weekday-button:hover, .weekday-button.selected {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .textarea-field {
+            width: 100%;
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: all 0.3s;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .textarea-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(45, 137, 239, 0.2);
+            outline: none;
+        }
+
+        .switch-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .switch-label {
+            font-size: 14px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 22px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+                --secondary-text: #a0a0a0;
+            }
+
+            .input-field, .textarea-field {
+                background-color: #2c2c2c;
+                border-color: #444;
+                color: #e0e0e0;
+            }
+
+            .reminder-type {
+                border-color: #444;
+                background-color: #2c2c2c;
+            }
+
+            .radio-button {
+                border-color: #444;
+                background-color: #2c2c2c;
+            }
+
+            .weekday-button {
+                border-color: #444;
+                color: #e0e0e0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="reminders.html" class="back-button">
+                <span class="material-icons-round">arrow_back</span>
+                <span style="margin-left: 4px;">返回</span>
+            </a>
+            <h1 class="page-title">创建提醒</h1>
+            <button class="save-button" onclick="saveReminder()">保存</button>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">notifications</span>
+                提醒类型
+            </h2>
+            <div class="reminder-types">
+                <div class="reminder-type selected" onclick="selectReminderType('blood-pressure')">
+                    <div class="reminder-icon">
+                        <span class="material-icons-round">favorite</span>
+                    </div>
+                    <div class="reminder-title">血压测量</div>
+                    <div class="reminder-desc">提醒您测量血压</div>
+                </div>
+                <div class="reminder-type" onclick="selectReminderType('medication')">
+                    <div class="reminder-icon">
+                        <span class="material-icons-round">medication</span>
+                    </div>
+                    <div class="reminder-title">服药提醒</div>
+                    <div class="reminder-desc">提醒您按时服药</div>
+                </div>
+                <div class="reminder-type" onclick="selectReminderType('weight')">
+                    <div class="reminder-icon">
+                        <span class="material-icons-round">monitor_weight</span>
+                    </div>
+                    <div class="reminder-title">体重测量</div>
+                    <div class="reminder-desc">提醒您测量体重</div>
+                </div>
+                <div class="reminder-type" onclick="selectReminderType('doctor')">
+                    <div class="reminder-icon">
+                        <span class="material-icons-round">medical_services</span>
+                    </div>
+                    <div class="reminder-title">医生预约</div>
+                    <div class="reminder-desc">提醒您医生就诊</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">title</span>
+                提醒名称
+            </h2>
+            <div class="form-group">
+                <input type="text" class="input-field" placeholder="请输入提醒名称" value="测量血压">
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">schedule</span>
+                提醒时间
+            </h2>
+            <div class="form-group">
+                <label class="input-label">时间</label>
+                <div class="time-selector">
+                    <div class="time-selector-col">
+                        <input type="time" class="input-field" value="08:00">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="input-label">重复</label>
+                <div class="radio-group">
+                    <div class="radio-button" onclick="selectRepeatOption('once')">一次</div>
+                    <div class="radio-button selected" onclick="selectRepeatOption('daily')">每日</div>
+                    <div class="radio-button" onclick="selectRepeatOption('weekly')">每周</div>
+                    <div class="radio-button" onclick="selectRepeatOption('custom')">自定义</div>
+                </div>
+            </div>
+
+            <div class="form-group" id="weekday-selector">
+                <label class="input-label">星期几重复</label>
+                <div class="weekday-selector">
+                    <button class="weekday-button" onclick="toggleWeekday(0)">一</button>
+                    <button class="weekday-button" onclick="toggleWeekday(1)">二</button>
+                    <button class="weekday-button selected" onclick="toggleWeekday(2)">三</button>
+                    <button class="weekday-button" onclick="toggleWeekday(3)">四</button>
+                    <button class="weekday-button selected" onclick="toggleWeekday(4)">五</button>
+                    <button class="weekday-button" onclick="toggleWeekday(5)">六</button>
+                    <button class="weekday-button" onclick="toggleWeekday(6)">日</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">settings</span>
+                提醒设置
+            </h2>
+            <div class="switch-container">
+                <span class="switch-label">声音提醒</span>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="switch-container">
+                <span class="switch-label">震动提醒</span>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="switch-container">
+                <span class="switch-label">锁屏显示</span>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">note</span>
+                备注
+            </h2>
+            <div class="form-group">
+                <textarea class="textarea-field" placeholder="添加备注（可选）..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 隐藏星期选择器（因为默认选择了"每日"）
+            document.getElementById('weekday-selector').style.display = 'none';
+        });
+
+        // 选择提醒类型
+        function selectReminderType(type) {
+            // 移除所有类型的选中状态
+            document.querySelectorAll('.reminder-type').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // 根据类型找到对应的元素
+            let selectedElement;
+            switch(type) {
+                case 'blood-pressure':
+                    selectedElement = document.querySelectorAll('.reminder-type')[0];
+                    break;
+                case 'medication':
+                    selectedElement = document.querySelectorAll('.reminder-type')[1];
+                    break;
+                case 'weight':
+                    selectedElement = document.querySelectorAll('.reminder-type')[2];
+                    break;
+                case 'doctor':
+                    selectedElement = document.querySelectorAll('.reminder-type')[3];
+                    break;
+            }
+            
+            // 添加选中状态
+            selectedElement.classList.add('selected');
+        }
+
+        // 选择重复选项
+        function selectRepeatOption(option) {
+            // 移除所有选项的选中状态
+            document.querySelectorAll('.radio-button').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // 根据选项找到对应的元素
+            let selectedElement;
+            let weekdaySelector = document.getElementById('weekday-selector');
+            
+            switch(option) {
+                case 'once':
+                    selectedElement = document.querySelectorAll('.radio-button')[0];
+                    weekdaySelector.style.display = 'none';
+                    break;
+                case 'daily':
+                    selectedElement = document.querySelectorAll('.radio-button')[1];
+                    weekdaySelector.style.display = 'none';
+                    break;
+                case 'weekly':
+                    selectedElement = document.querySelectorAll('.radio-button')[2];
+                    weekdaySelector.style.display = 'block';
+                    break;
+                case 'custom':
+                    selectedElement = document.querySelectorAll('.radio-button')[3];
+                    weekdaySelector.style.display = 'block';
+                    break;
+            }
+            
+            // 添加选中状态
+            selectedElement.classList.add('selected');
+        }
+
+        // 切换星期选择
+        function toggleWeekday(index) {
+            const weekdayButton = document.querySelectorAll('.weekday-button')[index];
+            weekdayButton.classList.toggle('selected');
+        }
+
+        // 保存提醒
+        function saveReminder() {
+            // 获取提醒类型
+            const selectedType = document.querySelector('.reminder-type.selected');
+            const typeIndex = Array.from(document.querySelectorAll('.reminder-type')).indexOf(selectedType);
+            let reminderType;
+            switch(typeIndex) {
+                case 0: reminderType = 'blood-pressure'; break;
+                case 1: reminderType = 'medication'; break;
+                case 2: reminderType = 'weight'; break;
+                case 3: reminderType = 'doctor'; break;
+            }
+            
+            // 获取提醒名称
+            const reminderName = document.querySelector('.input-field').value;
+            
+            // 获取提醒时间
+            const reminderTime = document.querySelector('input[type="time"]').value;
+            
+            // 获取重复选项
+            const selectedRepeat = document.querySelector('.radio-button.selected');
+            const repeatIndex = Array.from(document.querySelectorAll('.radio-button')).indexOf(selectedRepeat);
+            let repeatOption;
+            switch(repeatIndex) {
+                case 0: repeatOption = 'once'; break;
+                case 1: repeatOption = 'daily'; break;
+                case 2: repeatOption = 'weekly'; break;
+                case 3: repeatOption = 'custom'; break;
+            }
+            
+            // 获取选中的星期
+            const selectedWeekdays = [];
+            document.querySelectorAll('.weekday-button.selected').forEach((button, index) => {
+                selectedWeekdays.push(index + 1); // 1 = 周一, 2 = 周二, ...
+            });
+            
+            // 获取提醒设置
+            const soundEnabled = document.querySelectorAll('input[type="checkbox"]')[0].checked;
+            const vibrationEnabled = document.querySelectorAll('input[type="checkbox"]')[1].checked;
+            const lockScreenEnabled = document.querySelectorAll('input[type="checkbox"]')[2].checked;
+            
+            // 获取备注
+            const notes = document.querySelector('textarea').value;
+            
+            // 构建提醒对象
+            const reminder = {
+                type: reminderType,
+                name: reminderName,
+                time: reminderTime,
+                repeat: repeatOption,
+                weekdays: selectedWeekdays,
+                settings: {
+                    sound: soundEnabled,
+                    vibration: vibrationEnabled,
+                    lockScreen: lockScreenEnabled
+                },
+                notes: notes
+            };
+            
+            // 模拟保存操作（实际应用中应该调用API或保存到本地存储）
+            console.log('提醒已保存:', reminder);
+            
+            // 显示保存成功提示
+            alert('提醒已创建!');
+            
+            // 返回提醒列表页面
+            window.location.href = 'reminders.html';
+        }
+    </script>
+</body>
+</html> 

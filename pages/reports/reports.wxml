@@ -1,0 +1,261 @@
+<view class="container">
+  <view class="page-title">健康报告</view>
+  
+  <view class="report-tabs">
+    <view class="tab {{activeTab === 'weekly' ? 'active' : ''}}" bindtap="switchTab" data-tab="weekly">周报告</view>
+    <view class="tab {{activeTab === 'monthly' ? 'active' : ''}}" bindtap="switchTab" data-tab="monthly">月报告</view>
+  </view>
+  
+  <!-- 周报告 -->
+  <block wx:if="{{activeTab === 'weekly'}}">
+    <view class="date-selector">
+      <view class="date-arrow" bindtap="prevWeek">
+        <van-icon name="arrow-left" size="20px" />
+      </view>
+      <view class="date-range">{{weekStart}} 至 {{weekEnd}}</view>
+      <view class="date-arrow" bindtap="nextWeek">
+        <van-icon name="arrow" size="20px" />
+      </view>
+    </view>
+    
+    <view class="card">
+      <view class="card-header">
+        <view class="card-title">血压趋势</view>
+      </view>
+      
+      <block wx:if="{{bloodPressureData.length > 0}}">
+        <view class="chart-container">
+          <ec-canvas id="bloodPressureChart" canvas-id="bloodPressureCanvas" ec="{{ bloodPressureEc }}"></ec-canvas>
+        </view>
+        
+        <view class="stats-grid">
+          <view class="stat-item">
+            <view class="stat-value">{{bloodPressureStats.avgSystolic}}/{{bloodPressureStats.avgDiastolic}}</view>
+            <view class="stat-label">平均血压</view>
+          </view>
+          <view class="stat-item">
+            <view class="stat-value">{{bloodPressureStats.maxSystolic}}/{{bloodPressureStats.maxDiastolic}}</view>
+            <view class="stat-label">最高血压</view>
+          </view>
+          <view class="stat-item">
+            <view class="stat-value">{{bloodPressureStats.minSystolic}}/{{bloodPressureStats.minDiastolic}}</view>
+            <view class="stat-label">最低血压</view>
+          </view>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="empty-data">
+          <view class="empty-icon">
+            <van-icon name="info-o" size="48px" color="#cccccc" />
+          </view>
+          <view class="empty-text">暂无血压数据</view>
+        </view>
+      </block>
+    </view>
+    
+    <view class="card">
+      <view class="card-header">
+        <view class="card-title">体重趋势</view>
+      </view>
+      
+      <block wx:if="{{weightData.length > 0}}">
+        <view class="chart-container">
+          <ec-canvas id="weightChart" canvas-id="weightCanvas" ec="{{ weightEc }}"></ec-canvas>
+        </view>
+        
+        <view class="stats-grid">
+          <view class="stat-item">
+            <view class="stat-value">{{weightStats.avgWeight}} kg</view>
+            <view class="stat-label">平均体重</view>
+          </view>
+          <view class="stat-item">
+            <view class="stat-value">{{weightStats.maxWeight}} kg</view>
+            <view class="stat-label">最高体重</view>
+          </view>
+          <view class="stat-item">
+            <view class="stat-value">{{weightStats.minWeight}} kg</view>
+            <view class="stat-label">最低体重</view>
+          </view>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="empty-data">
+          <view class="empty-icon">
+            <van-icon name="info-o" size="48px" color="#cccccc" />
+          </view>
+          <view class="empty-text">暂无体重数据</view>
+        </view>
+      </block>
+    </view>
+    
+    <view class="card">
+      <view class="card-header">
+        <view class="card-title">大便记录分析</view>
+      </view>
+      
+      <block wx:if="{{stoolData.length > 0}}">
+        <view class="chart-container">
+          <ec-canvas id="stoolChart" canvas-id="stoolCanvas" ec="{{ stoolEc }}"></ec-canvas>
+        </view>
+        
+        <view class="stool-summary">
+          <view class="summary-item">
+            <view class="summary-label">本周大便次数</view>
+            <view class="summary-value">{{stoolStats.totalCount}} 次</view>
+          </view>
+          <view class="summary-item">
+            <view class="summary-label">正常次数</view>
+            <view class="summary-value">{{stoolStats.normalCount}} 次</view>
+          </view>
+          <view class="summary-item">
+            <view class="summary-label">异常次数</view>
+            <view class="summary-value">{{stoolStats.abnormalCount}} 次</view>
+          </view>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="empty-data">
+          <view class="empty-icon">
+            <van-icon name="info-o" size="48px" color="#cccccc" />
+          </view>
+          <view class="empty-text">暂无大便记录</view>
+        </view>
+      </block>
+    </view>
+    
+    <view class="card">
+      <view class="card-header">
+        <view class="card-title">用药记录</view>
+      </view>
+      
+      <block wx:if="{{medicationData.length > 0}}">
+        <view class="medication-list">
+          <view class="medication-item" wx:for="{{medicationData}}" wx:key="name">
+            <view class="medication-name">{{item.name}}</view>
+            <view class="medication-count">{{item.count}} 次</view>
+          </view>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="empty-data">
+          <view class="empty-icon">
+            <van-icon name="info-o" size="48px" color="#cccccc" />
+          </view>
+          <view class="empty-text">暂无用药记录</view>
+        </view>
+      </block>
+    </view>
+    
+    <view class="report-actions">
+      <button class="btn btn-primary" bindtap="generateReport">生成完整报告</button>
+      <button class="btn btn-secondary" bindtap="shareReport">分享报告</button>
+    </view>
+  </block>
+  
+  <!-- 月报告 -->
+  <block wx:if="{{activeTab === 'monthly'}}">
+    <view class="date-selector">
+      <view class="date-arrow" bindtap="prevMonth">
+        <van-icon name="arrow-left" size="20px" />
+      </view>
+      <view class="date-range">{{currentYear}}年{{currentMonth}}月</view>
+      <view class="date-arrow" bindtap="nextMonth">
+        <van-icon name="arrow" size="20px" />
+      </view>
+    </view>
+    
+    <!-- 月报告内容与周报告类似，但显示整月数据 -->
+    <view class="card">
+      <view class="card-header">
+        <view class="card-title">月度健康概览</view>
+      </view>
+      
+      <view class="health-overview">
+        <view class="overview-item">
+          <view class="overview-icon">
+            <van-icon name="like-o" size="24px" color="#2D89EF" />
+          </view>
+          <view class="overview-content">
+            <view class="overview-title">血压记录</view>
+            <view class="overview-value">{{monthlyStats.bloodPressureCount}} 次</view>
+          </view>
+        </view>
+        
+        <view class="overview-item">
+          <view class="overview-icon">
+            <van-icon name="balance-o" size="24px" color="#2D89EF" />
+          </view>
+          <view class="overview-content">
+            <view class="overview-title">体重记录</view>
+            <view class="overview-value">{{monthlyStats.weightCount}} 次</view>
+          </view>
+        </view>
+        
+        <view class="overview-item">
+          <view class="overview-icon">
+            <van-icon name="flower-o" size="24px" color="#2D89EF" />
+          </view>
+          <view class="overview-content">
+            <view class="overview-title">大便记录</view>
+            <view class="overview-value">{{monthlyStats.stoolCount}} 次</view>
+          </view>
+        </view>
+        
+        <view class="overview-item">
+          <view class="overview-icon">
+            <van-icon name="medicine-box-o" size="24px" color="#2D89EF" />
+          </view>
+          <view class="overview-content">
+            <view class="overview-title">用药记录</view>
+            <view class="overview-value">{{monthlyStats.medicationCount}} 次</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="card">
+      <view class="card-header">
+        <view class="card-title">月度血压趋势</view>
+      </view>
+      
+      <block wx:if="{{monthlyBloodPressureData.length > 0}}">
+        <view class="chart-container">
+          <ec-canvas id="monthlyBloodPressureChart" canvas-id="monthlyBloodPressureCanvas" ec="{{ monthlyBloodPressureEc }}"></ec-canvas>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="empty-data">
+          <view class="empty-icon">
+            <van-icon name="info-o" size="48px" color="#cccccc" />
+          </view>
+          <view class="empty-text">暂无血压数据</view>
+        </view>
+      </block>
+    </view>
+    
+    <view class="card">
+      <view class="card-header">
+        <view class="card-title">月度体重趋势</view>
+      </view>
+      
+      <block wx:if="{{monthlyWeightData.length > 0}}">
+        <view class="chart-container">
+          <ec-canvas id="monthlyWeightChart" canvas-id="monthlyWeightCanvas" ec="{{ monthlyWeightEc }}"></ec-canvas>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="empty-data">
+          <view class="empty-icon">
+            <van-icon name="info-o" size="48px" color="#cccccc" />
+          </view>
+          <view class="empty-text">暂无体重数据</view>
+        </view>
+      </block>
+    </view>
+    
+    <view class="report-actions">
+      <button class="btn btn-primary" bindtap="generateMonthlyReport">生成完整月报告</button>
+      <button class="btn btn-secondary" bindtap="shareMonthlyReport">分享月报告</button>
+    </view>
+  </block>
+</view> 

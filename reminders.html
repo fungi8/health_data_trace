@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康管理 - 提醒设置</title>
+    <!-- 引入 Ant Design 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.15/antd.min.css" />
+    <!-- 引入 Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2D89EF;
+            --warning-color: #D13438;
+            --success-color: #107C10;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --secondary-text: #666666;
+            --border-radius: 8px;
+            --spacing-unit: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-unit);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            padding: calc(var(--spacing-unit) * 2) 0;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            text-align: center;
+            flex: 1;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            padding: calc(var(--spacing-unit) * 1.5) 0;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .reminder-item:last-child {
+            border-bottom: none;
+        }
+
+        .reminder-icon {
+            font-size: 24px;
+            margin-right: calc(var(--spacing-unit) * 2);
+            color: var(--primary-color);
+        }
+
+        .reminder-info {
+            flex: 1;
+        }
+
+        .reminder-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0 0 calc(var(--spacing-unit) / 2);
+        }
+
+        .reminder-desc {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin: 0;
+        }
+
+        .reminder-toggle {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .reminder-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .add-reminder-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: calc(var(--spacing-unit) * 1.5);
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px dashed var(--primary-color);
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: calc(var(--spacing-unit) * 2);
+        }
+
+        .add-reminder-button:hover {
+            background-color: rgba(45, 137, 239, 0.05);
+        }
+
+        .add-reminder-button .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+        }
+
+        .reminder-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reminder-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 400px;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 3);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--secondary-text);
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .form-group {
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: calc(var(--spacing-unit));
+        }
+
+        .form-input {
+            width: 100%;
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(45, 137, 239, 0.2);
+            outline: none;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: all 0.3s;
+            background-color: var(--card-background);
+        }
+
+        .form-select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .time-picker {
+            display: flex;
+            gap: calc(var(--spacing-unit) * 2);
+        }
+
+        .time-picker .form-input {
+            text-align: center;
+        }
+
+        .days-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: calc(var(--spacing-unit));
+            margin-top: calc(var(--spacing-unit));
+        }
+
+        .day-option {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d9d9d9;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .day-option.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: calc(var(--spacing-unit) * 2);
+            margin-top: calc(var(--spacing-unit) * 3);
+        }
+
+        .cancel-button {
+            padding: calc(var(--spacing-unit)) calc(var(--spacing-unit) * 2);
+            background-color: transparent;
+            color: var(--secondary-text);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cancel-button:hover {
+            background-color: #f5f5f5;
+        }
+
+        .save-button {
+            padding: calc(var(--spacing-unit)) calc(var(--spacing-unit) * 2);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .save-button:hover {
+            background-color: #1a73e8;
+        }
+
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+                --secondary-text: #a0a0a0;
+            }
+
+            .reminder-item {
+                border-bottom-color: #333;
+            }
+
+            .form-input, .form-select {
+                background-color: #2c2c2c;
+                border-color: #444;
+                color: #e0e0e0;
+            }
+
+            .day-option {
+                border-color: #444;
+                color: #e0e0e0;
+            }
+
+            .cancel-button {
+                border-color: #444;
+            }
+
+            .cancel-button:hover {
+                background-color: #2c2c2c;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-unit);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="dashboard.html" class="back-button">
+                <span class="material-icons-round">arrow_back</span>
+            </a>
+            <h1 class="page-title">提醒设置</h1>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">favorite</span>
+                血压测量提醒
+            </h2>
+            
+            <div class="reminder-item">
+                <span class="material-icons-round reminder-icon">alarm</span>
+                <div class="reminder-info">
+                    <div class="reminder-title">早晨测量</div>
+                    <div class="reminder-desc">每天 07:30</div>
+                </div>
+                <label class="reminder-toggle">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="reminder-item">
+                <span class="material-icons-round reminder-icon">alarm</span>
+                <div class="reminder-info">
+                    <div class="reminder-title">晚间测量</div>
+                    <div class="reminder-desc">每天 20:00</div>
+                </div>
+                <label class="reminder-toggle">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <button class="add-reminder-button" data-type="bloodPressure">
+                <span class="material-icons-round">add</span>
+                添加血压测量提醒
+            </button>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">monitor_weight</span>
+                体重测量提醒
+            </h2>
+            
+            <div class="reminder-item">
+                <span class="material-icons-round reminder-icon">alarm</span>
+                <div class="reminder-info">
+                    <div class="reminder-title">每周体重记录</div>
+                    <div class="reminder-desc">每周一、四 08:00</div>
+                </div>
+                <label class="reminder-toggle">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <button class="add-reminder-button" data-type="weight">
+                <span class="material-icons-round">add</span>
+                添加体重测量提醒
+            </button>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">medication</span>
+                用药提醒
+            </h2>
+            
+            <div class="reminder-item">
+                <span class="material-icons-round reminder-icon">alarm</span>
+                <div class="reminder-info">
+                    <div class="reminder-title">降压药</div>
+                    <div class="reminder-desc">每天 08:00, 20:00</div>
+                </div>
+                <label class="reminder-toggle">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="reminder-item">
+                <span class="material-icons-round reminder-icon">alarm</span>
+                <div class="reminder-info">
+                    <div class="reminder-title">钙片</div>
+                    <div class="reminder-desc">每天 12:00</div>
+                </div>
+                <label class="reminder-toggle">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <button class="add-reminder-button" data-type="medication">
+                <span class="material-icons-round">add</span>
+                添加用药提醒
+            </button>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">event</span>
+                复诊提醒
+            </h2>
+            
+            <div class="reminder-item">
+                <span class="material-icons-round reminder-icon">calendar_today</span>
+                <div class="reminder-info">
+                    <div class="reminder-title">心内科复诊</div>
+                    <div class="reminder-desc">2023-07-15 提前3天提醒</div>
+                </div>
+                <label class="reminder-toggle">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <button class="add-reminder-button" data-type="appointment">
+                <span class="material-icons-round">add</span>
+                添加复诊提醒
+            </button>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">notifications</span>
+                异常数据预警
+            </h2>
+            
+            <div class="reminder-item">
+                <span class="material-icons-round reminder-icon">warning</span>
+                <div class="reminder-info">
+                    <div class="reminder-title">血压异常预警</div>
+                    <div class="reminder-desc">收缩压 > 140 或 舒张压 > 90</div>
+                </div>
+                <label class="reminder-toggle">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="reminder-item">
+                <span class="material-icons-round reminder-icon">warning</span>
+                <div class="reminder-info">
+                    <div class="reminder-title">体重异常预警</div>
+                    <div class="reminder-desc">体重变化 > 5%</div>
+                </div>
+                <label class="reminder-toggle">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加提醒模态框 -->
+    <div class="reminder-modal" id="reminderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">添加提醒</h3>
+                <button class="modal-close" id="closeModal">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            
+            <div class="form-group">
+                <label for="reminderTitle" class="form-label">提醒名称</label>
+                <input type="text" id="reminderTitle" class="form-input" placeholder="例如：早晨测量">
+            </div>
+            
+            <div class="form-group">
+                <label for="reminderType" class="form-label">提醒类型</label>
+                <select id="reminderType" class="form-select">
+                    <option value="bloodPressure">血压测量</option>
+                    <option value="weight">体重测量</option>
+                    <option value="medication">用药提醒</option>
+                    <option value="appointment">复诊提醒</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="repeatGroup">
+                <label class="form-label">重复</label>
+                <select id="repeatType" class="form-select">
+                    <option value="daily">每天</option>
+                    <option value="weekly">每周</option>
+                    <option value="monthly">每月</option>
+                    <option value="once">仅一次</option>
+                </select>
+                
+                <div class="days-selector" id="weekdaySelector" style="display: none;">
+                    <div class="day-option" data-day="1">一</div>
+                    <div class="day-option" data-day="2">二</div>
+                    <div class="day-option" data-day="3">三</div>
+                    <div class="day-option" data-day="4">四</div>
+                    <div class="day-option" data-day="5">五</div>
+                    <div class="day-option" data-day="6">六</div>
+                    <div class="day-option" data-day="0">日</div>
+                </div>
+            </div>
+            
+            <div class="form-group" id="dateGroup" style="display: none;">
+                <label for="reminderDate" class="form-label">日期</label>
+                <input type="date" id="reminderDate" class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label for="reminderTime" class="form-label">时间</label>
+                <div class="time-picker">
+                    <input type="time" id="reminderTime" class="form-input">
+                </div>
+            </div>
+            
+            <div class="form-group" id="advanceNoticeGroup" style="display: none;">
+                <label for="advanceNotice" class="form-label">提前提醒</label>
+                <select id="advanceNotice" class="form-select">
+                    <option value="0">当天提醒</option>
+                    <option value="1">提前1天</option>
+                    <option value="3">提前3天</option>
+                    <option value="7">提前1周</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="reminderNote" class="form-label">备注</label>
+                <input type="text" id="reminderNote" class="form-input" placeholder="添加备注...">
+            </div>
+            
+            <div class="modal-footer">
+                <button class="cancel-button" id="cancelButton">取消</button>
+                <button class="save-button" id="saveButton">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 打开添加提醒模态框
+        const addButtons = document.querySelectorAll('.add-reminder-button');
+        const modal = document.getElementById('reminderModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelButton = document.getElementById('cancelButton');
+        const saveButton = document.getElementById('saveButton');
+        const modalTitle = document.getElementById('modalTitle');
+        const reminderTypeSelect = document.getElementById('reminderType');
+        const repeatTypeSelect = document.getElementById('repeatType');
+        const weekdaySelector = document.getElementById('weekdaySelector');
+        const dateGroup = document.getElementById('dateGroup');
+        const advanceNoticeGroup = document.getElementById('advanceNoticeGroup');
+        
+        addButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const type = this.getAttribute('data-type');
+                
+                // 设置模态框标题
+                let title = '添加提醒';
+                switch (type) {
+                    case 'bloodPressure':
+                        title = '添加血压测量提醒';
+                        break;
+                    case 'weight':
+                        title = '添加体重测量提醒';
+                        break;
+                    case 'medication':
+                        title = '添加用药提醒';
+                        break;
+                    case 'appointment':
+                        title = '添加复诊提醒';
+                        break;
+                }
+                modalTitle.textContent = title;
+                
+                // 设置提醒类型
+                reminderTypeSelect.value = type;
+                
+                // 根据类型显示/隐藏相关字段
+                if (type === 'appointment') {
+                    repeatTypeSelect.value = 'once';
+                    document.getElementById('repeatGroup').style.display = 'none';
+                    dateGroup.style.display = 'block';
+                    advanceNoticeGroup.style.display = 'block';
+                } else {
+                    document.getElementById('repeatGroup').style.display = 'block';
+                    dateGroup.style.display = 'none';
+                    advanceNoticeGroup.style.display = 'none';
+                    repeatTypeSelect.value = 'daily';
+                    weekdaySelector.style.display = 'none';
+                }
+                
+                // 打开模态框
+                modal.classList.add('active');
+            });
+        });
+        
+        // 关闭模态框
+        closeModal.addEventListener('click', function() {
+            modal.classList.remove('active');
+        });
+        
+        cancelButton.addEventListener('click', function() {
+            modal.classList.remove('active');
+        });
+        
+        // 重复类型变更
+        repeatTypeSelect.addEventListener('change', function() {
+            if (this.value === 'weekly') {
+                weekdaySelector.style.display = 'flex';
+            } else {
+                weekdaySelector.style.display = 'none';
+            }
+            
+            if (this.value === 'once') {
+                dateGroup.style.display = 'block';
+            } else {
+                dateGroup.style.display = 'none';
+            }
+        });
+        
+        // 星期选择
+        const dayOptions = document.querySelectorAll('.day-option');
+        dayOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+        });
+        
+        // 保存提醒
+        saveButton.addEventListener('click', function() {
+            const title = document.getElementById('reminderTitle').value;
+            const type = reminderTypeSelect.value;
+            const repeatType = repeatTypeSelect.value;
+            const time = document.getElementById('reminderTime').value;
+            const note = document.getElementById('reminderNote').value;
+            
+            // 验证必填字段
+            if (!title) {
+                alert('请输入提醒名称');
+                return;
+            }
+            
+            if (!time) {
+                alert('请选择提醒时间');
+                return;
+            }
+            
+            // 收集选中的星期
+            let selectedDays = [];
+            if (repeatType === 'weekly') {
+                const selectedDayElements = document.querySelectorAll('.day-option.selected');
+                if (selectedDayElements.length === 0) {
+                    alert('请选择至少一天');
+                    return;
+                }
+                
+                selectedDayElements.forEach(day => {
+                    selectedDays.push(parseInt(day.getAttribute('data-day')));
+                });
+            }
+            
+            // 收集日期（如果是一次性提醒）
+            let date = null;
+            if (repeatType === 'once' || type === 'appointment') {
+                date = document.getElementById('reminderDate').value;
+                if (!date) {
+                    alert('请选择日期');
+                    return;
+                }
+            }
+            
+            // 收集提前提醒天数（如果是复诊提醒）
+            let advanceNotice = null;
+            if (type === 'appointment') {
+                advanceNotice = document.getElementById('advanceNotice').value;
+            }
+            
+            // 构建提醒对象
+            const reminder = {
+                title: title,
+                type: type,
+                repeatType: repeatType,
+                time: time,
+                days: selectedDays,
+                date: date,
+                advanceNotice: advanceNotice,
+                note: note,
+                enabled: true
+            };
+            
+            // 这里应该有实际的保存逻辑
+            console.log('保存提醒:', reminder);
+            
+            // 关闭模态框
+            modal.classList.remove('active');
+            
+            // 显示成功消息
+            alert('提醒已设置');
+            
+            // 重新加载页面（实际应用中应该动态更新UI）
+            location.reload();
+        });
+        
+        // 设置当前日期为默认值
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        document.getElementById('reminderDate').value = `${year}-${month}-${day}`;
+    </script>
+</body>
+</html>

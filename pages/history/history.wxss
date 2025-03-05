@@ -1,0 +1,130 @@
+/* pages/history/history.wxss */
+.page-header {
+  margin-bottom: 32rpx;
+}
+
+.page-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-bottom: 24rpx;
+  text-align: center;
+}
+
+.filter-section {
+  margin-bottom: 32rpx;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.record-date {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.record-status {
+  font-size: 24rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+}
+
+.record-content {
+  margin-bottom: 24rpx;
+}
+
+.record-value-large {
+  font-size: 48rpx;
+  font-weight: 600;
+  margin-bottom: 24rpx;
+  color: var(--primary-color);
+}
+
+.record-unit {
+  font-size: 28rpx;
+  font-weight: normal;
+  color: var(--secondary-text);
+}
+
+.record-details {
+  margin-bottom: 24rpx;
+}
+
+.detail-item {
+  display: flex;
+  margin-bottom: 16rpx;
+}
+
+.detail-label {
+  width: 160rpx;
+  font-size: 28rpx;
+  color: var(--secondary-text);
+}
+
+.detail-value {
+  flex: 1;
+  font-size: 28rpx;
+}
+
+.record-note {
+  background-color: #f9f9f9;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  margin-bottom: 24rpx;
+}
+
+.note-label {
+  font-size: 24rpx;
+  color: var(--secondary-text);
+  margin-bottom: 8rpx;
+}
+
+.note-content {
+  font-size: 28rpx;
+}
+
+.record-actions {
+  display: flex;
+  border-top: 1px solid #eee;
+  padding-top: 24rpx;
+}
+
+.action-button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 24rpx;
+  color: var(--secondary-text);
+}
+
+.action-button.delete {
+  color: var(--warning-color);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 0;
+}
+
+.empty-icon {
+  margin-bottom: 32rpx;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  font-weight: 500;
+  margin-bottom: 16rpx;
+  color: #999;
+}
+
+.empty-subtext {
+  font-size: 28rpx;
+  color: #ccc;
+} 

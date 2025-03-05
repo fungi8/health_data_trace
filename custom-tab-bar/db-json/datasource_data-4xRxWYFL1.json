@@ -1,0 +1,198 @@
+{
+    "previewTableName": "weight_records-preview",
+    "publishCacheStatus": "ready",
+    "subType": "database",
+    "schema": {
+        "x-primary-column": "_id",
+        "x-kind": "tcb",
+        "x-defaultMethods": [
+            "wedaCreate",
+            "wedaUpdate",
+            "wedaDelete",
+            "wedaGetItem",
+            "wedaGetRecords",
+            "wedaGetList",
+            "wedaBatchCreate",
+            "wedaBatchUpdate",
+            "wedaBatchDelete"
+        ],
+        "type": "object",
+        "x-relatedType": "exist",
+        "x-viewId": "view-6l688tgigw",
+        "required": [],
+        "properties": {
+            "owner": {
+                "default": "",
+                "x-system": true,
+                "x-id": "2e09b7f",
+                "name": "owner",
+                "format": "father-son",
+                "pattern": "",
+                "x-index": 4,
+                "title": "所有人",
+                "type": "string",
+                "x-unique": false,
+                "x-parent": {
+                    "fatherAction": "judge",
+                    "type": "father-son",
+                    "parentDataSourceName": "sys_user"
+                }
+            },
+            "note": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "a9f78c77",
+                "format": "",
+                "description": "备注",
+                "type": "string",
+                "x-index": 8,
+                "title": "note",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "createdAt": {
+                "default": 0,
+                "x-system": true,
+                "x-id": "b2add19",
+                "format": "datetime",
+                "x-index": 2,
+                "type": "number",
+                "title": "创建时间",
+                "x-unique": false
+            },
+            "datetime": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "4f5c6d7a",
+                "format": "",
+                "description": "测量时间",
+                "type": "string",
+                "x-index": 6,
+                "title": "datetime",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "createBy": {
+                "default": "",
+                "x-system": true,
+                "x-id": "1519e51",
+                "name": "createBy",
+                "format": "father-son",
+                "pattern": "",
+                "x-index": 5,
+                "type": "string",
+                "title": "创建人",
+                "x-unique": false,
+                "x-parent": {
+                    "fatherAction": "judge",
+                    "type": "father-son",
+                    "parentDataSourceName": "sys_user"
+                }
+            },
+            "updateBy": {
+                "default": "",
+                "x-system": true,
+                "x-id": "93a079a",
+                "name": "updateBy",
+                "format": "father-son",
+                "pattern": "",
+                "x-index": 6,
+                "type": "string",
+                "title": "修改人",
+                "x-unique": false,
+                "x-parent": {
+                    "fatherAction": "judge",
+                    "type": "father-son",
+                    "parentDataSourceName": "sys_user"
+                }
+            },
+            "_departmentList": {
+                "default": "",
+                "x-system": true,
+                "x-id": "8bebf56",
+                "format": "",
+                "name": "_departmentList",
+                "title": "所属部门",
+                "type": "array",
+                "x-index": 7,
+                "items": {
+                    "type": "string"
+                },
+                "x-unique": false
+            },
+            "_openid": {
+                "default": "",
+                "x-system": true,
+                "x-id": "252b6a1",
+                "name": "_openid",
+                "format": "",
+                "pattern": "",
+                "description": "仅微信云开发下使用",
+                "x-index": 45,
+                "title": "记录创建者",
+                "type": "string",
+                "x-unique": false
+            },
+            "weight": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "2435a3f4",
+                "format": "",
+                "description": "体重",
+                "type": "string",
+                "x-index": 2,
+                "title": "weight",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "_id": {
+                "default": "",
+                "x-system": true,
+                "x-id": "508b684",
+                "format": "",
+                "pattern": "",
+                "x-index": 1,
+                "type": "string",
+                "title": "数据标识",
+                "x-unique": true
+            },
+            "bmi": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "3b6e2aa4",
+                "format": "",
+                "description": "",
+                "type": "string",
+                "x-index": 4,
+                "title": "bmi",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "updatedAt": {
+                "default": 0,
+                "x-system": true,
+                "x-id": "53f94f7",
+                "format": "datetime",
+                "x-index": 3,
+                "title": "更新时间",
+                "type": "number",
+                "x-unique": false
+            }
+        }
+    },
+    "dbInstanceType": "FLEXDB",
+    "title": "weight_records",
+    "name": "weight_records",
+    "dbLinkType": "internal",
+    "tableNameRule": "only_name",
+    "type": "database",
+    "childDataSourceNames": null,
+    "updateTime": "2025-03-05T07:39:01",
+    "publishedTableName": "weight_records",
+    "id": "data-4xRxWYFL1",
+    "dbSourceType": "internal_flexdb",
+    "methods": [],
+    "fun": "{\"onlineVersion\": 2, \"previewVersion\": 1, \"onlinePublishAt\": 1741160341697, \"prviewPublishAt\": 1741160339173}",
+    "publishStatus": 1,
+    "configuration": {}
+}

@@ -1,0 +1,36 @@
+/* 页面特定样式，全局样式在app.wxss中定义 */
+.welcome-card {
+  position: relative;
+}
+
+.welcome-card::after {
+  content: "";
+  position: absolute;
+  right: -20rpx;
+  bottom: -20rpx;
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.card-grid {
+  margin-bottom: 120rpx; /* 为底部添加按钮留出空间 */
+}
+
+/* 添加记录按钮样式 */
+.add-button {
+  position: fixed;
+  bottom: 160rpx;
+  right: 40rpx;
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(45, 137, 239, 0.4);
+  z-index: 100;
+} 

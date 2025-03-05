@@ -1,0 +1,16 @@
+/* custom-tab-bar/index.wxss */
+.van-tabbar-item {
+  color: #999999;
+}
+
+.van-tabbar-item--active {
+  color: #2D89EF;
+}
+
+.van-tabbar-item__icon {
+  margin-bottom: 4px;
+}
+
+.van-tabbar-item__text {
+  font-size: 12px;
+} 

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康管理 - 血压记录</title>
+    <!-- 引入 Ant Design 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.15/antd.min.css" />
+    <!-- 引入 Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- 引入 Ant Design JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.15/antd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2D89EF;
+            --warning-color: #D13438;
+            --success-color: #107C10;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --secondary-text: #666666;
+            --border-radius: 8px;
+            --spacing-unit: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-unit);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            padding: calc(var(--spacing-unit) * 2) 0;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            text-align: center;
+            flex: 1;
+        }
+
+        .save-button {
+            padding: calc(var(--spacing-unit)) calc(var(--spacing-unit) * 2);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .save-button:hover {
+            background-color: #1a73e8;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: calc(var(--spacing-unit));
+        }
+
+        .form-input {
+            width: 100%;
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(45, 137, 239, 0.2);
+            outline: none;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: all 0.3s;
+            background-color: var(--card-background);
+        }
+
+        .form-select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .input-group {
+            display: flex;
+            gap: calc(var(--spacing-unit));
+        }
+
+        .input-group .form-input {
+            flex: 1;
+        }
+
+        .input-addon {
+            display: flex;
+            align-items: center;
+            padding: 0 calc(var(--spacing-unit));
+            color: var(--secondary-text);
+            font-size: 14px;
+        }
+
+        .time-picker {
+            display: flex;
+            gap: calc(var(--spacing-unit) * 2);
+        }
+
+        .time-picker .form-input {
+            text-align: center;
+        }
+
+        .bp-input-container {
+            display: flex;
+            align-items: center;
+            gap: calc(var(--spacing-unit) * 2);
+        }
+
+        .bp-input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bp-input-label {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin-bottom: 4px;
+        }
+
+        .bp-separator {
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--secondary-text);
+            margin-top: 16px;
+        }
+
+        .bp-unit {
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin-top: 16px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: calc(var(--spacing-unit));
+            margin-top: calc(var(--spacing-unit));
+        }
+
+        .radio-option {
+            flex: 1;
+            padding: calc(var(--spacing-unit));
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-option.selected {
+            background-color: rgba(45, 137, 239, 0.1);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-top: calc(var(--spacing-unit));
+            padding: calc(var(--spacing-unit));
+            border-radius: var(--border-radius);
+            font-size: 14px;
+        }
+
+        .status-indicator.normal {
+            background-color: rgba(16, 124, 16, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-indicator.warning {
+            background-color: rgba(209, 52, 56, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-indicator .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            font-size: 18px;
+        }
+
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+                --secondary-text: #a0a0a0;
+            }
+
+            .form-input, .form-select {
+                background-color: #2c2c2c;
+                border-color: #444;
+                color: #e0e0e0;
+            }
+
+            .radio-option {
+                border-color: #444;
+                color: #e0e0e0;
+            }
+
+            .radio-option.selected {
+                background-color: rgba(45, 137, 239, 0.2);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-unit);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="dashboard.html" class="back-button">
+                <span class="material-icons-round">arrow_back</span>
+            </a>
+            <h1 class="page-title">血压记录</h1>
+            <button class="save-button" id="saveRecord">保存</button>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">event</span>
+                日期和时间
+            </h2>
+            
+            <div class="form-group">
+                <label for="recordDate" class="form-label">日期</label>
+                <input type="date" id="recordDate" class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label for="recordTime" class="form-label">时间</label>
+                <input type="time" id="recordTime" class="form-input">
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">favorite</span>
+                血压数值
+            </h2>
+            
+            <div class="bp-input-container">
+                <div class="bp-input-group">
+                    <div class="bp-input-label">收缩压 (高压)</div>
+                    <input type="number" id="systolic" class="form-input" placeholder="120" min="60" max="250">
+                </div>
+                
+                <div class="bp-separator">/</div>
+                
+                <div class="bp-input-group">
+                    <div class="bp-input-label">舒张压 (低压)</div>
+                    <input type="number" id="diastolic" class="form-input" placeholder="80" min="40" max="180">
+                </div>
+                
+                <div class="bp-unit">mmHg</div>
+            </div>
+            
+            <div id="bpStatus" class="status-indicator normal" style="display: none;">
+                <span class="material-icons-round">check_circle</span>
+                <span id="bpStatusText">血压正常</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">monitor_heart</span>
+                心率
+            </h2>
+            
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="number" id="heartRate" class="form-input" placeholder="72" min="40" max="200">
+                    <div class="input-addon">次/分钟</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">fitness_center</span>
+                测量条件
+            </h2>
+            
+            <div class="form-group">
+                <label class="form-label">测量手臂</label>
+                <div class="radio-group" id="armGroup">
+                    <div class="radio-option selected" data-value="left">左臂</div>
+                    <div class="radio-option" data-value="right">右臂</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">测量姿势</label>
+                <div class="radio-group" id="positionGroup">
+                    <div class="radio-option selected" data-value="sitting">坐姿</div>
+                    <div class="radio-option" data-value="lying">卧姿</div>
+                    <div class="radio-option" data-value="standing">站姿</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">测量前活动</label>
+                <div class="radio-group" id="activityGroup">
+                    <div class="radio-option selected" data-value="rest">休息</div>
+                    <div class="radio-option" data-value="light">轻度活动</div>
+                    <div class="radio-option" data-value="moderate">中度活动</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">medication</span>
+                用药情况
+            </h2>
+            
+            <div class="form-group">
+                <label class="form-label">是否服药</label>
+                <div class="radio-group" id="medicationGroup">
+                    <div class="radio-option selected" data-value="no">未服药</div>
+                    <div class="radio-option" data-value="yes">已服药</div>
+                </div>
+            </div>
+            
+            <div class="form-group" id="medicationDetailsGroup" style="display: none;">
+                <label for="medicationDetails" class="form-label">药物详情</label>
+                <input type="text" id="medicationDetails" class="form-input" placeholder="例如：降压药 5mg">
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">notes</span>
+                备注
+            </h2>
+            
+            <div class="form-group">
+                <textarea id="notes" class="form-input" rows="3" placeholder="添加备注信息..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 设置当前日期和时间为默认值
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        
+        document.getElementById('recordDate').value = `${year}-${month}-${day}`;
+        document.getElementById('recordTime').value = `${hours}:${minutes}`;
+        
+        // 单选按钮组处理
+        const radioGroups = document.querySelectorAll('.radio-group');
+        radioGroups.forEach(group => {
+            const options = group.querySelectorAll('.radio-option');
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    options.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // 如果是用药情况，显示/隐藏药物详情输入框
+                    if (group.id === 'medicationGroup') {
+                        const medicationDetailsGroup = document.getElementById('medicationDetailsGroup');
+                        if (this.getAttribute('data-value') === 'yes') {
+                            medicationDetailsGroup.style.display = 'block';
+                        } else {
+                            medicationDetailsGroup.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+        
+        // 血压状态评估
+        const systolicInput = document.getElementById('systolic');
+        const diastolicInput = document.getElementById('diastolic');
+        const bpStatus = document.getElementById('bpStatus');
+        const bpStatusText = document.getElementById('bpStatusText');
+        
+        function updateBPStatus() {
+            const systolic = parseInt(systolicInput.value);
+            const diastolic = parseInt(diastolicInput.value);
+            
+            if (isNaN(systolic) || isNaN(diastolic)) {
+                bpStatus.style.display = 'none';
+                return;
+            }
+            
+            bpStatus.style.display = 'flex';
+            
+            if (systolic >= 140 || diastolic >= 90) {
+                bpStatus.className = 'status-indicator warning';
+                bpStatusText.textContent = '血压偏高';
+            } else if (systolic <= 90 || diastolic <= 60) {
+                bpStatus.className = 'status-indicator warning';
+                bpStatusText.textContent = '血压偏低';
+            } else {
+                bpStatus.className = 'status-indicator normal';
+                bpStatusText.textContent = '血压正常';
+            }
+        }
+        
+        systolicInput.addEventListener('input', updateBPStatus);
+        diastolicInput.addEventListener('input', updateBPStatus);
+        
+        // 保存记录
+        document.getElementById('saveRecord').addEventListener('click', function() {
+            // 收集表单数据
+            const recordDate = document.getElementById('recordDate').value;
+            const recordTime = document.getElementById('recordTime').value;
+            const systolic = document.getElementById('systolic').value;
+            const diastolic = document.getElementById('diastolic').value;
+            const heartRate = document.getElementById('heartRate').value;
+            
+            // 获取选中的单选项
+            const getSelectedValue = (groupId) => {
+                const selectedOption = document.querySelector(`#${groupId} .radio-option.selected`);
+                return selectedOption ? selectedOption.getAttribute('data-value') : null;
+            };
+            
+            const arm = getSelectedValue('armGroup');
+            const position = getSelectedValue('positionGroup');
+            const activity = getSelectedValue('activityGroup');
+            const medication = getSelectedValue('medicationGroup');
+            const medicationDetails = medication === 'yes' ? document.getElementById('medicationDetails').value : null;
+            const notes = document.getElementById('notes').value;
+            
+            // 验证必填字段
+            if (!systolic || !diastolic) {
+                alert('请输入血压数值');
+                return;
+            }
+            
+            // 构建记录对象
+            const record = {
+                date: recordDate,
+                time: recordTime,
+                systolic: parseInt(systolic),
+                diastolic: parseInt(diastolic),
+                heartRate: heartRate ? parseInt(heartRate) : null,
+                arm: arm,
+                position: position,
+                activity: activity,
+                medication: medication,
+                medicationDetails: medicationDetails,
+                notes: notes
+            };
+            
+            // 这里应该有实际的保存逻辑
+            console.log('保存血压记录:', record);
+            
+            // 显示成功消息
+            alert('记录已保存');
+            
+            // 返回仪表盘
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+</body>
+</html> 

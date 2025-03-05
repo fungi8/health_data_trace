@@ -1,0 +1,26 @@
+{
+  "name": "health_data_trace",
+  "version": "1.0.0",
+  "description": "健康数据跟踪",
+  "main": "app.js",
+  "dependencies": {
+    "@cloudbase/wx-cloud-client-sdk": "^1.4.0",
+    "@vant/weapp": "^1.11.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "weapp-build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fungi8/health_data_trace.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fungi8/health_data_trace/issues"
+  },
+  "homepage": "https://github.com/fungi8/health_data_trace#readme"
+}

@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康管理 - 数据管理</title>
+    <!-- 引入 Ant Design 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.15/antd.min.css" />
+    <!-- 引入 Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2D89EF;
+            --warning-color: #D13438;
+            --success-color: #107C10;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --secondary-text: #666666;
+            --border-radius: 8px;
+            --spacing-unit: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-unit);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            padding: calc(var(--spacing-unit) * 2) 0;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            text-align: center;
+            flex: 1;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .data-export-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: calc(var(--spacing-unit) * 2);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .export-option {
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .export-option:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(45, 137, 239, 0.05);
+        }
+
+        .export-icon {
+            font-size: 32px;
+            margin-bottom: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .export-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .export-desc {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin-top: calc(var(--spacing-unit) / 2);
+        }
+
+        .data-type-selector {
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .data-type-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: calc(var(--spacing-unit));
+        }
+
+        .data-type-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: calc(var(--spacing-unit));
+        }
+
+        .data-type-checkbox {
+            display: flex;
+            align-items: center;
+            margin-right: calc(var(--spacing-unit) * 2);
+            margin-bottom: calc(var(--spacing-unit));
+        }
+
+        .data-type-checkbox input {
+            margin-right: calc(var(--spacing-unit));
+        }
+
+        .date-range-selector {
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .date-range-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: calc(var(--spacing-unit));
+        }
+
+        .date-range-inputs {
+            display: flex;
+            gap: calc(var(--spacing-unit) * 2);
+        }
+
+        .date-input {
+            flex: 1;
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+        }
+
+        .export-button {
+            width: 100%;
+            padding: calc(var(--spacing-unit) * 1.5);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: calc(var(--spacing-unit) * 2);
+        }
+
+        .export-button:hover {
+            background-color: #1a73e8;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .sync-icon {
+            font-size: 24px;
+            margin-right: calc(var(--spacing-unit) * 2);
+        }
+
+        .sync-icon.synced {
+            color: var(--success-color);
+        }
+
+        .sync-icon.syncing {
+            color: var(--primary-color);
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .sync-info {
+            flex: 1;
+        }
+
+        .sync-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin: 0 0 calc(var(--spacing-unit) / 2);
+        }
+
+        .sync-desc {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin: 0;
+        }
+
+        .sync-button {
+            padding: calc(var(--spacing-unit)) calc(var(--spacing-unit) * 2);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .sync-button:hover {
+            background-color: #1a73e8;
+        }
+
+        .device-list {
+            margin-top: calc(var(--spacing-unit) * 2);
+        }
+
+        .device-item {
+            display: flex;
+            align-items: center;
+            padding: calc(var(--spacing-unit) * 1.5) 0;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .device-item:last-child {
+            border-bottom: none;
+        }
+
+        .device-icon {
+            font-size: 24px;
+            margin-right: calc(var(--spacing-unit) * 2);
+            color: var(--secondary-text);
+        }
+
+        .device-info {
+            flex: 1;
+        }
+
+        .device-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0 0 calc(var(--spacing-unit) / 2);
+        }
+
+        .device-status {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin: 0;
+        }
+
+        .device-status.current {
+            color: var(--success-color);
+        }
+
+        .device-action {
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0;
+        }
+
+        .family-sharing {
+            margin-top: calc(var(--spacing-unit) * 2);
+        }
+
+        .family-member {
+            display: flex;
+            align-items: center;
+            padding: calc(var(--spacing-unit) * 1.5) 0;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .family-member:last-child {
+            border-bottom: none;
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e8e8e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: calc(var(--spacing-unit) * 2);
+            overflow: hidden;
+        }
+
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0 0 calc(var(--spacing-unit) / 2);
+        }
+
+        .member-role {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin: 0;
+        }
+
+        .member-toggle {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .member-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .add-member-button {
+            display: flex;
+            align-items: center;
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0;
+            margin-top: calc(var(--spacing-unit) * 2);
+        }
+
+        .add-member-button .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            font-size: 18px;
+        }
+
+        .data-security {
+            margin-top: calc(var(--spacing-unit) * 2);
+        }
+
+        .security-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: calc(var(--spacing-unit) * 1.5) 0;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .security-option:last-child {
+            border-bottom: none;
+        }
+
+        .security-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+                --secondary-text: #a0a0a0;
+            }
+
+            .export-option {
+                border-color: #444;
+                background-color: #2c2c2c;
+            }
+
+            .export-option:hover {
+                background-color: rgba(45, 137, 239, 0.15);
+            }
+
+            .date-input {
+                background-color: #2c2c2c;
+                border-color: #444;
+                color: #e0e0e0;
+            }
+
+            .device-item, .family-member, .security-option {
+                border-bottom-color: #333;
+            }
+
+            .member-avatar {
+                background-color: #444;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-unit);
+            }
+            
+            .data-export-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="dashboard.html" class="back-button">
+                <span class="material-icons-round">arrow_back</span>
+            </a>
+            <h1 class="page-title">数据管理</h1>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">cloud_download</span>
+                数据导出
+            </h2>
+            
+            <div class="data-export-options">
+                <div class="export-option" id="exportCsv">
+                    <span class="material-icons-round export-icon">description</span>
+                    <div class="export-label">CSV格式</div>
+                    <div class="export-desc">适用于电子表格软件</div>
+                </div>
+                
+                <div class="export-option" id="exportPdf">
+                    <span class="material-icons-round export-icon">picture_as_pdf</span>
+                    <div class="export-label">PDF格式</div>
+                    <div class="export-desc">适用于打印和分享</div>
+                </div>
+            </div>
+            
+            <div class="data-type-selector">
+                <label class="data-type-label">选择数据类型</label>
+                <div class="data-type-options">
+                    <label class="data-type-checkbox">
+                        <input type="checkbox" value="bloodPressure" checked> 血压记录
+                    </label>
+                    <label class="data-type-checkbox">
+                        <input type="checkbox" value="stool"> 排便记录
+                    </label>
+                    <label class="data-type-checkbox">
+                        <input type="checkbox" value="weight"> 体重记录
+                    </label>
+                    <label class="data-type-checkbox">
+                        <input type="checkbox" value="medication"> 用药记录
+                    </label>
+                </div>
+            </div>
+            
+            <div class="date-range-selector">
+                <label class="date-range-label">选择日期范围</label>
+                <div class="date-range-inputs">
+                    <input type="date" class="date-input" id="startDate">
+                    <input type="date" class="date-input" id="endDate">
+                </div>
+            </div>
+            
+            <button class="export-button" id="exportData">导出数据</button>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">sync</span>
+                多设备同步
+            </h2>
+            
+            <div class="sync-status">
+                <span class="material-icons-round sync-icon synced">check_circle</span>
+                <div class="sync-info">
+                    <div class="sync-title">数据已同步</div>
+                    <div class="sync-desc">最后同步时间: 今天 14:30</div>
+                </div>
+                <button class="sync-button" id="syncNow">立即同步</button>
+            </div>
+            
+            <div class="device-list">
+                <div class="device-item">
+                    <span class="material-icons-round device-icon">smartphone</span>
+                    <div class="device-info">
+                        <div class="device-name">iPhone 13</div>
+                        <div class="device-status current">当前设备</div>
+                    </div>
+                </div>
+                
+                <div class="device-item">
+                    <span class="material-icons-round device-icon">tablet_mac</span>
+                    <div class="device-info">
+                        <div class="device-name">iPad Pro</div>
+                        <div class="device-status">最后同步: 昨天 20:15</div>
+                    </div>
+                    <button class="device-action">移除</button>
+                </div>
+                
+                <div class="device-item">
+                    <span class="material-icons-round device-icon">computer</span>
+                    <div class="device-info">
+                        <div class="device-name">MacBook Air</div>
+                        <div class="device-status">最后同步: 3天前</div>
+                    </div>
+                    <button class="device-action">移除</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">people</span>
+                家庭共享
+            </h2>
+            
+            <div class="family-sharing">
+                <div class="family-member">
+                    <div class="member-avatar">
+                        <span class="material-icons-round">person</span>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">张三</div>
+                        <div class="member-role">本人</div>
+                    </div>
+                </div>
+                
+                <div class="family-member">
+                    <div class="member-avatar">
+                        <span class="material-icons-round">person</span>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">李四</div>
+                        <div class="member-role">配偶</div>
+                    </div>
+                    <label class="member-toggle">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="family-member">
+                    <div class="member-avatar">
+                        <span class="material-icons-round">person</span>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">王五</div>
+                        <div class="member-role">父亲</div>
+                    </div>
+                    <label class="member-toggle">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <button class="add-member-button">
+                <span class="material-icons-round">add_circle</span>
+                添加家庭成员
+            </button>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="material-icons-round">security</span>
+                数据安全
+            </h2>
+            
+            <div class="data-security">
+                <div class="security-option">
+                    <div class="security-label">数据加密存储</div>
+                    <label class="member-toggle">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="security-option">
+                    <div class="security-label">生物识别锁定</div>
+                    <label class="member-toggle">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="security-option">
+                    <div class="security-label">自动备份</div>
+                    <label class="member-toggle">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 设置默认日期范围（过去30天）
+        const today = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+        
+        document.getElementById('startDate').value = formatDate(thirtyDaysAgo);
+        document.getElementById('endDate').value = formatDate(today);
+        
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        // 导出按钮点击事件
+        document.getElementById('exportData').addEventListener('click', function() {
+            // 获取选中的数据类型
+            const selectedTypes = [];
+            const checkboxes = document.querySelectorAll('.data-type-options input[type="checkbox"]:checked');
+            checkboxes.forEach(checkbox => {
+                selectedTypes.push(checkbox.value);
+            });
+            
+            // 获取日期范围
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            // 验证选择
+            if (selectedTypes.length === 0) {
+                alert('请至少选择一种数据类型');
+                return;
+            }
+            
+            if (!startDate || !endDate) {
+                alert('请选择日期范围');
+                return;
+            }
+            
+            // 确定导出格式
+            let exportFormat = 'csv'; // 默认CSV
+            if (document.querySelector('#exportPdf').classList.contains('selected')) {
+                exportFormat = 'pdf';
+            }
+            
+            // 这里应该有实际的导出逻辑
+            console.log('导出数据:', {
+                types: selectedTypes,
+                startDate: startDate,
+                endDate: endDate,
+                format: exportFormat
+            });
+            
+            alert('数据导出中，请稍候...');
+            
+            // 模拟导出完成
+            setTimeout(() => {
+                alert('数据导出成功！');
+            }, 1500);
+        });
+        
+        // 导出格式选择
+        document.getElementById('exportCsv').addEventListener('click', function() {
+            document.getElementById('exportPdf').classList.remove('selected');
+            this.classList.add('selected');
+        });
+        
+        document.getElementById('exportPdf').addEventListener('click', function() {
+            document.getElementById('exportCsv').classList.remove('selected');
+            this.classList.add('selected');
+        });
+        
+        // 默认选中CSV格式
+        document.getElementById('exportCsv').classList.add('selected');
+        
+        // 同步按钮点击事件
+        document.getElementById('syncNow').addEventListener('click', function() {
+            const syncIcon = document.querySelector('.sync-icon');
+            const syncTitle = document.querySelector('.sync-title');
+            const syncDesc = document.querySelector('.sync-desc');
+            
+            // 更改为同步中状态
+            syncIcon.classList.remove('synced');
+            syncIcon.classList.add('syncing');
+            syncIcon.textContent = 'sync';
+            syncTitle.textContent = '正在同步...';
+            
+            // 模拟同步过程
+            setTimeout(() => {
+                // 更改为同步完成状态
+                syncIcon.classList.remove('syncing');
+                syncIcon.classList.add('synced');
+                syncIcon.textContent = 'check_circle';
+                syncTitle.textContent = '数据已同步';
+                
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                syncDesc.textContent = `最后同步时间: 今天 ${hours}:${minutes}`;
+                
+                alert('数据同步成功！');
+            }, 2000);
+        });
+        
+        // 添加家庭成员按钮点击事件
+        document.querySelector('.add-member-button').addEventListener('click', function() {
+            alert('此功能正在开发中，敬请期待！');
+        });
+    </script>
+</body>
+</html> 

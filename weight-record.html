@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康管理 - 体重记录</title>
+    <!-- 引入 Ant Design 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.15/antd.min.css" />
+    <!-- 引入 Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2D89EF;
+            --warning-color: #D13438;
+            --success-color: #107C10;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --secondary-text: #666666;
+            --border-radius: 8px;
+            --spacing-unit: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-unit);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            padding: calc(var(--spacing-unit) * 2) 0;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            text-align: center;
+            flex: 1;
+        }
+
+        .save-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit)) calc(var(--spacing-unit) * 2);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .save-button:hover {
+            background-color: #1a73e8;
+        }
+
+        .form-card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .form-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: calc(var(--spacing-unit));
+        }
+
+        .form-input {
+            width: 100%;
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(45, 137, 239, 0.2);
+            outline: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: calc(var(--spacing-unit) * 2);
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .unit-selector {
+            display: flex;
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .unit-option {
+            flex: 1;
+            padding: calc(var(--spacing-unit) * 1.5);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .unit-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .weight-input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .weight-input {
+            flex: 1;
+            font-size: 32px;
+            text-align: center;
+            padding: calc(var(--spacing-unit) * 2);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            margin-right: calc(var(--spacing-unit) * 2);
+        }
+
+        .weight-unit {
+            font-size: 20px;
+            color: var(--secondary-text);
+            width: 60px;
+        }
+
+        .bmi-result {
+            text-align: center;
+            padding: calc(var(--spacing-unit) * 2);
+            border-radius: var(--border-radius);
+            background-color: rgba(45, 137, 239, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .bmi-value {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .bmi-category {
+            font-size: 14px;
+            color: var(--secondary-text);
+        }
+
+        .body-measurements {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: calc(var(--spacing-unit) * 2);
+        }
+
+        .measurement-input {
+            display: flex;
+            align-items: center;
+        }
+
+        .measurement-input .form-input {
+            flex: 1;
+            margin-right: calc(var(--spacing-unit));
+        }
+
+        .measurement-unit {
+            width: 40px;
+            color: var(--secondary-text);
+            font-size: 14px;
+        }
+
+        .note-textarea {
+            width: 100%;
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            min-height: 100px;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+
+        .note-textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(45, 137, 239, 0.2);
+            outline: none;
+        }
+
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+                --secondary-text: #a0a0a0;
+            }
+
+            .form-input, .note-textarea, .weight-input {
+                background-color: #2c2c2c;
+                border-color: #444;
+                color: #e0e0e0;
+            }
+
+            .unit-selector {
+                border-color: #444;
+            }
+
+            .unit-option:not(.active) {
+                background-color: #2c2c2c;
+            }
+
+            .bmi-result {
+                background-color: rgba(45, 137, 239, 0.15);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-unit);
+            }
+            
+            .body-measurements {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="dashboard.html" class="back-button">
+                <span class="material-icons-round">arrow_back</span>
+            </a>
+            <h1 class="page-title">体重记录</h1>
+            <button class="save-button" id="saveRecord">保存</button>
+        </div>
+
+        <div class="form-card">
+            <h2 class="form-title">
+                <span class="material-icons-round">schedule</span>
+                记录时间
+            </h2>
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="recordDate" class="form-label">日期</label>
+                        <input type="date" id="recordDate" class="form-input" value="">
+                    </div>
+                    <div class="form-col">
+                        <label for="recordTime" class="form-label">时间</label>
+                        <input type="time" id="recordTime" class="form-input" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <h2 class="form-title">
+                <span class="material-icons-round">monitor_weight</span>
+                体重
+            </h2>
+            
+            <div class="unit-selector">
+                <div class="unit-option active" data-unit="kg">公斤 (kg)</div>
+                <div class="unit-option" data-unit="lb">磅 (lb)</div>
+            </div>
+            
+            <div class="weight-input-container">
+                <input type="number" id="weightValue" class="weight-input" step="0.1" min="0" placeholder="0.0">
+                <div class="weight-unit" id="weightUnit">kg</div>
+            </div>
+            
+            <div class="bmi-result">
+                <div class="bmi-value" id="bmiValue">--</div>
+                <div class="bmi-category" id="bmiCategory">请输入体重和身高计算BMI</div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <h2 class="form-title">
+                <span class="material-icons-round">straighten</span>
+                身体围度
+            </h2>
+            
+            <div class="body-measurements">
+                <div class="form-group">
+                    <label for="waistCircumference" class="form-label">腰围</label>
+                    <div class="measurement-input">
+                        <input type="number" id="waistCircumference" class="form-input" step="0.1" min="0">
+                        <span class="measurement-unit">cm</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="hipCircumference" class="form-label">臀围</label>
+                    <div class="measurement-input">
+                        <input type="number" id="hipCircumference" class="form-input" step="0.1" min="0">
+                        <span class="measurement-unit">cm</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="chestCircumference" class="form-label">胸围</label>
+                    <div class="measurement-input">
+                        <input type="number" id="chestCircumference" class="form-input" step="0.1" min="0">
+                        <span class="measurement-unit">cm</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="thighCircumference" class="form-label">大腿围</label>
+                    <div class="measurement-input">
+                        <input type="number" id="thighCircumference" class="form-input" step="0.1" min="0">
+                        <span class="measurement-unit">cm</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <h2 class="form-title">
+                <span class="material-icons-round">water_drop</span>
+                体脂率
+            </h2>
+            <div class="form-group">
+                <div class="measurement-input">
+                    <input type="number" id="bodyFatPercentage" class="form-input" step="0.1" min="0" max="100">
+                    <span class="measurement-unit">%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <h2 class="form-title">
+                <span class="material-icons-round">note</span>
+                备注
+            </h2>
+            <div class="form-group">
+                <textarea id="note" class="note-textarea" placeholder="添加备注..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 设置当前日期和时间为默认值
+        const now = new Date();
+        const dateInput = document.getElementById('recordDate');
+        const timeInput = document.getElementById('recordTime');
+        
+        // 格式化日期为 YYYY-MM-DD
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        dateInput.value = `${year}-${month}-${day}`;
+        
+        // 格式化时间为 HH:MM
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        timeInput.value = `${hours}:${minutes}`;
+        
+        // 单位切换
+        const unitOptions = document.querySelectorAll('.unit-option');
+        const weightUnitDisplay = document.getElementById('weightUnit');
+        const weightInput = document.getElementById('weightValue');
+        let currentUnit = 'kg';
+        
+        unitOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const newUnit = this.getAttribute('data-unit');
+                
+                if (newUnit !== currentUnit) {
+                    unitOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 更新显示的单位
+                    weightUnitDisplay.textContent = newUnit;
+                    
+                    // 转换输入的值
+                    if (weightInput.value) {
+                        if (newUnit === 'kg' && currentUnit === 'lb') {
+                            // 磅转公斤
+                            weightInput.value = (parseFloat(weightInput.value) * 0.453592).toFixed(1);
+                        } else if (newUnit === 'lb' && currentUnit === 'kg') {
+                            // 公斤转磅
+                            weightInput.value = (parseFloat(weightInput.value) * 2.20462).toFixed(1);
+                        }
+                    }
+                    
+                    currentUnit = newUnit;
+                    calculateBMI();
+                }
+            });
+        });
+        
+        // 计算BMI
+        const bmiValueDisplay = document.getElementById('bmiValue');
+        const bmiCategoryDisplay = document.getElementById('bmiCategory');
+        
+        // 假设用户身高已经在个人资料中设置
+        const userHeight = 170; // 厘米
+        
+        function calculateBMI() {
+            const weightValue = parseFloat(weightInput.value);
+            
+            if (weightValue && weightValue > 0) {
+                // 确保体重单位是公斤
+                let weightInKg = weightValue;
+                if (currentUnit === 'lb') {
+                    weightInKg = weightValue * 0.453592;
+                }
+                
+                // 计算BMI: 体重(kg) / 身高(m)²
+                const heightInMeters = userHeight / 100;
+                const bmi = weightInKg / (heightInMeters * heightInMeters);
+                
+                bmiValueDisplay.textContent = bmi.toFixed(1);
+                
+                // 设置BMI分类
+                if (bmi < 18.5) {
+                    bmiCategoryDisplay.textContent = '体重过轻';
+                } else if (bmi < 24) {
+                    bmiCategoryDisplay.textContent = '正常范围';
+                } else if (bmi < 28) {
+                    bmiCategoryDisplay.textContent = '超重';
+                } else {
+                    bmiCategoryDisplay.textContent = '肥胖';
+                }
+            } else {
+                bmiValueDisplay.textContent = '--';
+                bmiCategoryDisplay.textContent = '请输入体重计算BMI';
+            }
+        }
+        
+        weightInput.addEventListener('input', calculateBMI);
+        
+        // 保存记录
+        document.getElementById('saveRecord').addEventListener('click', function() {
+            // 收集表单数据
+            const recordDate = dateInput.value;
+            const recordTime = timeInput.value;
+            const weight = weightInput.value;
+            const waist = document.getElementById('waistCircumference').value;
+            const hip = document.getElementById('hipCircumference').value;
+            const chest = document.getElementById('chestCircumference').value;
+            const thigh = document.getElementById('thighCircumference').value;
+            const bodyFat = document.getElementById('bodyFatPercentage').value;
+            const note = document.getElementById('note').value;
+            
+            // 验证必填字段
+            if (!weight) {
+                alert('请输入体重');
+                return;
+            }
+            
+            // 构建记录对象
+            const record = {
+                date: recordDate,
+                time: recordTime,
+                weight: {
+                    value: parseFloat(weight),
+                    unit: currentUnit
+                },
+                bmi: bmiValueDisplay.textContent !== '--' ? parseFloat(bmiValueDisplay.textContent) : null,
+                measurements: {
+                    waist: waist ? parseFloat(waist) : null,
+                    hip: hip ? parseFloat(hip) : null,
+                    chest: chest ? parseFloat(chest) : null,
+                    thigh: thigh ? parseFloat(thigh) : null
+                },
+                bodyFat: bodyFat ? parseFloat(bodyFat) : null,
+                note: note
+            };
+            
+            // 这里应该有实际的保存逻辑
+            console.log('保存记录:', record);
+            
+            // 保存成功后跳转到仪表盘
+            alert('记录已保存');
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康管家 - 数据可视化</title>
+    <!-- 引入 Ant Design 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.15/antd.min.css" />
+    <!-- 引入 Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- 引入 ECharts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2D89EF;
+            --warning-color: #D13438;
+            --success-color: #107C10;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --secondary-text: #666666;
+            --border-radius: 8px;
+            --spacing-unit: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-unit);
+            padding-bottom: 80px; /* 避免内容被底部导航栏遮挡 */
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            padding: calc(var(--spacing-unit) * 2) 0;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            text-align: center;
+            flex: 1;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .time-filter {
+            display: flex;
+            align-items: center;
+            gap: calc(var(--spacing-unit));
+        }
+
+        .filter-button {
+            padding: 4px 8px;
+            border: 1px solid #d9d9d9;
+            border-radius: calc(var(--border-radius) / 2);
+            font-size: 12px;
+            background-color: transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: calc(var(--spacing-unit) * 2);
+        }
+
+        .summary-item {
+            flex: 1;
+            text-align: center;
+            padding: calc(var(--spacing-unit));
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin-bottom: calc(var(--spacing-unit) / 2);
+        }
+
+        .summary-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: calc(var(--spacing-unit) * 2);
+            margin-top: calc(var(--spacing-unit));
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: var(--secondary-text);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: calc(var(--spacing-unit) / 2);
+        }
+
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid #d9d9d9;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+
+        .tab-header::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .tab-item {
+            padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 2);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-item.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            padding: calc(var(--spacing-unit));
+        }
+
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-background);
+            display: flex;
+            justify-content: space-around;
+            padding: calc(var(--spacing-unit) * 1.5) 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--secondary-text);
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            margin-bottom: calc(var(--spacing-unit) / 2);
+        }
+
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+                --secondary-text: #a0a0a0;
+            }
+
+            .filter-button {
+                border-color: #444;
+            }
+
+            .tab-header {
+                border-bottom-color: #444;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="page-title">健康数据</h1>
+        </div>
+
+        <div class="tab-header">
+            <div class="tab-item active" onclick="switchTab('blood-pressure')">血压</div>
+            <div class="tab-item" onclick="switchTab('weight')">体重</div>
+            <div class="tab-item" onclick="switchTab('stool')">排便</div>
+        </div>
+
+        <!-- 血压面板 -->
+        <div class="tab-content" id="blood-pressure-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="material-icons-round">favorite</span>
+                        血压趋势
+                    </h2>
+                    <div class="time-filter">
+                        <button class="filter-button" onclick="updateBloodPressureChart(7)">7天</button>
+                        <button class="filter-button active" onclick="updateBloodPressureChart(30)">30天</button>
+                        <button class="filter-button" onclick="updateBloodPressureChart(90)">90天</button>
+                    </div>
+                </div>
+                <div class="chart-container" id="blood-pressure-chart"></div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #2D89EF;"></div>
+                        <span>收缩压</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #5AC8FA;"></div>
+                        <span>舒张压</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #FF9500;"></div>
+                        <span>心率</span>
+                    </div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-item">
+                        <div class="summary-label">平均收缩压</div>
+                        <div class="summary-value">118 mmHg</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">平均舒张压</div>
+                        <div class="summary-value">75 mmHg</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">平均心率</div>
+                        <div class="summary-value">72 bpm</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="material-icons-round">watch_later</span>
+                        血压昼夜节律
+                    </h2>
+                </div>
+                <div class="chart-container" id="blood-pressure-rhythm-chart"></div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #2D89EF;"></div>
+                        <span>白天血压</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #5AC8FA;"></div>
+                        <span>夜间血压</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 体重面板 -->
+        <div class="tab-content" id="weight-tab" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="material-icons-round">monitor_weight</span>
+                        体重趋势
+                    </h2>
+                    <div class="time-filter">
+                        <button class="filter-button" onclick="updateWeightChart(7)">7天</button>
+                        <button class="filter-button active" onclick="updateWeightChart(30)">30天</button>
+                        <button class="filter-button" onclick="updateWeightChart(90)">90天</button>
+                    </div>
+                </div>
+                <div class="chart-container" id="weight-chart"></div>
+                <div class="summary-row">
+                    <div class="summary-item">
+                        <div class="summary-label">最低体重</div>
+                        <div class="summary-value">64.5 kg</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">平均体重</div>
+                        <div class="summary-value">65.8 kg</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">最高体重</div>
+                        <div class="summary-value">67.2 kg</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="material-icons-round">pie_chart</span>
+                        体脂变化
+                    </h2>
+                </div>
+                <div class="chart-container" id="body-fat-chart"></div>
+                <div class="summary-row">
+                    <div class="summary-item">
+                        <div class="summary-label">平均体脂率</div>
+                        <div class="summary-value">22.5%</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">平均BMI</div>
+                        <div class="summary-value">22.8</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 排便面板 -->
+        <div class="tab-content" id="stool-tab" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="material-icons-round">healing</span>
+                        排便周期分析
+                    </h2>
+                    <div class="time-filter">
+                        <button class="filter-button" onclick="updateStoolChart(7)">7天</button>
+                        <button class="filter-button active" onclick="updateStoolChart(30)">30天</button>
+                        <button class="filter-button" onclick="updateStoolChart(90)">90天</button>
+                    </div>
+                </div>
+                <div class="chart-container" id="stool-chart"></div>
+                <div class="summary-row">
+                    <div class="summary-item">
+                        <div class="summary-label">平均频率</div>
+                        <div class="summary-value">1.2 次/天</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">主要类型</div>
+                        <div class="summary-value">Type 4</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">异常次数</div>
+                        <div class="summary-value">2 次</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="material-icons-round">bar_chart</span>
+                        Bristol分布
+                    </h2>
+                </div>
+                <div class="chart-container" id="bristol-chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="navbar">
+        <a href="index.html" class="nav-item">
+            <span class="material-icons-round nav-icon">home</span>
+            <span>首页</span>
+        </a>
+        <a href="data-visualization.html" class="nav-item active">
+            <span class="material-icons-round nav-icon">dashboard</span>
+            <span>统计</span>
+        </a>
+        <a href="#" class="nav-item" style="position: relative;">
+            <div style="width: 50px; height: 50px; background-color: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: absolute; bottom: 10px;">
+                <span class="material-icons-round" style="color: white; font-size: 24px;">add</span>
+            </div>
+        </a>
+        <a href="reminders.html" class="nav-item">
+            <span class="material-icons-round nav-icon">notifications</span>
+            <span>提醒</span>
+        </a>
+        <a href="data-management.html" class="nav-item">
+            <span class="material-icons-round nav-icon">person</span>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script>
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化血压图表
+            initBloodPressureChart();
+            initBloodPressureRhythmChart();
+            
+            // 初始化体重图表
+            initWeightChart();
+            initBodyFatChart();
+            
+            // 初始化排便图表
+            initStoolChart();
+            initBristolChart();
+        });
+
+        // 切换标签
+        function switchTab(tabId) {
+            // 隐藏所有标签内容
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // 显示选中的标签内容
+            document.getElementById(tabId + '-tab').style.display = 'block';
+            
+            // 更新标签样式
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 设置当前标签为激活状态
+            event.target.classList.add('active');
+        }
+
+        // 血压图表初始化
+        function initBloodPressureChart() {
+            const chart = echarts.init(document.getElementById('blood-pressure-chart'));
+            
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        return params[0].name + '<br />' +
+                               params[0].seriesName + ': ' + params[0].value + ' mmHg<br />' +
+                               params[1].seriesName + ': ' + params[1].value + ' mmHg<br />' +
+                               params[2].seriesName + ': ' + params[2].value + ' bpm';
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['6/20', '6/21', '6/22', '6/23', '6/24', '6/25', '6/26', '6/27', '6/28', '6/29', '6/30', '7/1', '7/2', '7/3', '7/4', '7/5', '7/6', '7/7', '7/8', '7/9', '7/10', '7/11', '7/12', '7/13', '7/14', '7/15', '7/16', '7/17', '7/18', '7/19']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name: '收缩压',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: {
+                            width: 2,
+                            color: '#2D89EF'
+                        },
+                        data: [120, 118, 119, 121, 122, 120, 118, 117, 115, 116, 118, 120, 122, 121, 119, 118, 120, 122, 121, 119, 118, 117, 116, 118, 120, 119, 117, 118, 120, 119]
+                    },
+                    {
+                        name: '舒张压',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: {
+                            width: 2,
+                            color: '#5AC8FA'
+                        },
+                        data: [80, 78, 77, 79, 80, 79, 76, 75, 74, 75, 77, 78, 80, 79, 78, 76, 78, 80, 79, 77, 76, 75, 74, 76, 78, 77, 75, 76, 78, 77]
+                    },
+                    {
+                        name: '心率',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: {
+                            width: 2,
+                            color: '#FF9500'
+                        },
+                        data: [72, 74, 73, 71, 70, 72, 74, 75, 76, 75, 73, 72, 70, 71, 72, 74, 73, 71, 70, 72, 74, 75, 76, 74, 73, 72, 74, 73, 72, 71]
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            
+            // 窗口大小调整时重绘图表
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 更新血压图表数据
+        function updateBloodPressureChart(days) {
+            // 在实际应用中，应该根据选择的天数获取相应的数据
+            // 这里只是简单地切换按钮样式
+            
+            // 更新按钮样式
+            const parentElement = event.target.parentElement;
+            parentElement.querySelectorAll('.filter-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 刷新图表
+            const chart = echarts.getInstanceByDom(document.getElementById('blood-pressure-chart'));
+            if (chart) {
+                // 模拟数据更新
+                // 在实际应用中，这里应该获取过去days天的数据
+                chart.setOption({
+                    xAxis: {
+                        data: getDateRange(days)
+                    }
+                });
+            }
+        }
+
+        // 血压昼夜节律图表初始化
+        function initBloodPressureRhythmChart() {
+            const chart = echarts.init(document.getElementById('blood-pressure-rhythm-chart'));
+            
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        return params[0].name + '<br />' +
+                               params[0].seriesName + ': ' + params[0].value + ' mmHg<br />' +
+                               params[1].seriesName + ': ' + params[1].value + ' mmHg';
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['0时', '2时', '4时', '6时', '8时', '10时', '12时', '14时', '16时', '18时', '20时', '22时']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name: '白天血压',
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {
+                            opacity: 0.2,
+                            color: '#2D89EF'
+                        },
+                        lineStyle: {
+                            width: 2,
+                            color: '#2D89EF'
+                        },
+                        data: [105, 102, 100, 105, 115, 118, 122, 120, 121, 119, 115, 110]
+                    },
+                    {
+                        name: '夜间血压',
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {
+                            opacity: 0.2,
+                            color: '#5AC8FA'
+                        },
+                        lineStyle: {
+                            width: 2,
+                            color: '#5AC8FA'
+                        },
+                        data: [72, 70, 68, 70, 76, 78, 80, 79, 78, 76, 75, 73]
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            
+            // 窗口大小调整时重绘图表
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 体重图表初始化
+        function initWeightChart() {
+            const chart = echarts.init(document.getElementById('weight-chart'));
+            
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: '{b}<br />{a}: {c} kg'
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['6/20', '6/23', '6/26', '6/29', '7/2', '7/5', '7/8', '7/11', '7/14', '7/17', '7/20']
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 64,
+                    max: 68
+                },
+                series: [
+                    {
+                        name: '体重',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: {
+                            width: 2,
+                            color: '#2D89EF'
+                        },
+                        areaStyle: {
+                            opacity: 0.2,
+                            color: '#2D89EF'
+                        },
+                        data: [66.8, 66.5, 66.2, 65.9, 65.7, 65.5, 65.2, 65.0, 64.8, 64.7, 64.5]
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            
+            // 窗口大小调整时重绘图表
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 更新体重图表数据
+        function updateWeightChart(days) {
+            // 更新按钮样式
+            const parentElement = event.target.parentElement;
+            parentElement.querySelectorAll('.filter-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 刷新图表
+            const chart = echarts.getInstanceByDom(document.getElementById('weight-chart'));
+            if (chart) {
+                chart.setOption({
+                    xAxis: {
+                        data: getDateRange(Math.floor(days / 3)) // 假设每3天记录一次体重
+                    }
+                });
+            }
+        }
+
+        // 体脂图表初始化
+        function initBodyFatChart() {
+            const chart = echarts.init(document.getElementById('body-fat-chart'));
+            
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        return params[0].name + '<br />' +
+                               params[0].seriesName + ': ' + params[0].value + '%<br />' +
+                               params[1].seriesName + ': ' + params[1].value;
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['6/20', '6/23', '6/26', '6/29', '7/2', '7/5', '7/8', '7/11', '7/14', '7/17', '7/20']
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '体脂率',
+                        min: 20,
+                        max: 24
+                    },
+                    {
+                        type: 'value',
+                        name: 'BMI',
+                        min: 22,
+                        max: 24
+                    }
+                ],
+                series: [
+                    {
+                        name: '体脂率',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: {
+                            width: 2,
+                            color: '#FF9500'
+                        },
+                        data: [23.5, 23.3, 23.1, 22.9, 22.7, 22.5, 22.3, 22.1, 22.0, 21.8, 21.5]
+                    },
+                    {
+                        name: 'BMI',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        smooth: true,
+                        lineStyle: {
+                            width: 2,
+                            color: '#5AC8FA'
+                        },
+                        data: [23.5, 23.4, 23.3, 23.2, 23.1, 23.0, 22.9, 22.8, 22.7, 22.6, 22.5]
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            
+            // 窗口大小调整时重绘图表
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 排便图表初始化
+        function initStoolChart() {
+            const chart = echarts.init(document.getElementById('stool-chart'));
+            
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        if (params.componentSubType === 'scatter') {
+                            return params.name + '<br />' + 'Bristol类型: ' + params.value[1];
+                        }
+                        return params.name;
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['7/1', '7/2', '7/3', '7/4', '7/5', '7/6', '7/7', '7/8', '7/9', '7/10', '7/11', '7/12', '7/13', '7/14', '7/15', '7/16', '7/17', '7/18', '7/19', '7/20']
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 0,
+                    max: 7,
+                    name: 'Bristol类型',
+                    nameLocation: 'end'
+                },
+                series: [
+                    {
+                        type: 'scatter',
+                        symbolSize: 20,
+                        data: [
+                            ['7/1', 4],
+                            ['7/1', 3],
+                            ['7/2', 4],
+                            ['7/3', 4],
+                            ['7/4', 3],
+                            ['7/5', 4],
+                            ['7/6', 5],
+                            ['7/6', 4],
+                            ['7/7', 4],
+                            ['7/8', 3],
+                            ['7/9', 4],
+                            ['7/10', 4],
+                            ['7/11', 3],
+                            ['7/12', 4],
+                            ['7/12', 4],
+                            ['7/13', 5],
+                            ['7/14', 4],
+                            ['7/15', 3],
+                            ['7/16', 4],
+                            ['7/17', 4],
+                            ['7/18', 3],
+                            ['7/19', 4],
+                            ['7/20', 4]
+                        ],
+                        itemStyle: {
+                            color: function(params) {
+                                const type = params.value[1];
+                                if (type <= 2) return '#D13438'; // 便秘（红色）
+                                if (type <= 4) return '#107C10'; // 正常（绿色）
+                                return '#FF9500'; // 腹泻（橙色）
+                            }
+                        }
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            
+            // 窗口大小调整时重绘图表
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 更新排便图表数据
+        function updateStoolChart(days) {
+            // 更新按钮样式
+            const parentElement = event.target.parentElement;
+            parentElement.querySelectorAll('.filter-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 刷新图表
+            const chart = echarts.getInstanceByDom(document.getElementById('stool-chart'));
+            if (chart) {
+                chart.setOption({
+                    xAxis: {
+                        data: getDateRange(days)
+                    }
+                });
+            }
+        }
+
+        // Bristol分布图表初始化
+        function initBristolChart() {
+            const chart = echarts.init(document.getElementById('bristol-chart'));
+            
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'horizontal',
+                    bottom: 10,
+                    data: ['Type 1', 'Type 2', 'Type 3', 'Type 4', 'Type 5', 'Type 6', 'Type 7']
+                },
+                series: [
+                    {
+                        name: 'Bristol分布',
+                        type: 'pie',
+                        radius: ['30%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '18',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            {value: 0, name: 'Type 1', itemStyle: {color: '#D13438'}},
+                            {value: 2, name: 'Type 2', itemStyle: {color: '#E74856'}},
+                            {value: 5, name: 'Type 3', itemStyle: {color: '#70c1b3'}},
+                            {value: 12, name: 'Type 4', itemStyle: {color: '#107C10'}},
+                            {value: 3, name: 'Type 5', itemStyle: {color: '#FFB900'}},
+                            {value: 1, name: 'Type 6', itemStyle: {color: '#FF8C00'}},
+                            {value: 0, name: 'Type 7', itemStyle: {color: '#FF5600'}}
+                        ]
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            
+            // 窗口大小调整时重绘图表
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 获取日期范围
+        function getDateRange(days) {
+            const dates = [];
+            const today = new Date();
+            
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                dates.push(month + '/' + day);
+            }
+            
+            return dates;
+        }
+    </script>
+</body>
+</html> 

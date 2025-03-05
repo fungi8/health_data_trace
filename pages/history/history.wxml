@@ -1,0 +1,209 @@
+<view class="container">
+  <view class="page-header">
+    <view class="page-title">历史记录</view>
+    <view class="filter-section">
+      <van-dropdown-menu>
+        <van-dropdown-item value="{{ recordType }}" options="{{ recordTypeOptions }}" bind:change="onRecordTypeChange" />
+        <van-dropdown-item value="{{ timeRange }}" options="{{ timeRangeOptions }}" bind:change="onTimeRangeChange" />
+      </van-dropdown-menu>
+    </view>
+  </view>
+
+  <!-- 血压记录 -->
+  <block wx:if="{{recordType === 'blood-pressure'}}">
+    <view class="card" wx:for="{{bloodPressureRecords}}" wx:key="timestamp">
+      <view class="record-header">
+        <view class="record-date">{{item.dateFormatted}}</view>
+        <view class="record-status {{item.statusClass}}">{{item.statusText}}</view>
+      </view>
+      
+      <view class="record-content">
+        <view class="record-value-large">{{item.systolic}}/{{item.diastolic}} <text class="record-unit">mmHg</text></view>
+        
+        <view class="record-details">
+          <view class="detail-item" wx:if="{{item.pulse}}">
+            <view class="detail-label">脉搏</view>
+            <view class="detail-value">{{item.pulse}} 次/分</view>
+          </view>
+          
+          <view class="detail-item">
+            <view class="detail-label">测量时间</view>
+            <view class="detail-value">{{item.timeFormatted}}</view>
+          </view>
+        </view>
+        
+        <view class="record-note" wx:if="{{item.note}}">
+          <view class="note-label">备注</view>
+          <view class="note-content">{{item.note}}</view>
+        </view>
+      </view>
+      
+      <view class="record-actions">
+        <view class="action-button" bindtap="viewDetail" data-id="{{item.timestamp}}">
+          <van-icon name="eye-o" size="18px" />
+          <text>查看</text>
+        </view>
+        <view class="action-button" bindtap="editRecord" data-id="{{item.timestamp}}">
+          <van-icon name="edit" size="18px" />
+          <text>编辑</text>
+        </view>
+        <view class="action-button delete" bindtap="deleteRecord" data-id="{{item.timestamp}}">
+          <van-icon name="delete-o" size="18px" />
+          <text>删除</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 体重记录 -->
+  <block wx:elif="{{recordType === 'weight'}}">
+    <view class="card" wx:for="{{weightRecords}}" wx:key="timestamp">
+      <view class="record-header">
+        <view class="record-date">{{item.dateFormatted}}</view>
+        <view class="record-status {{item.statusClass}}">{{item.statusText}}</view>
+      </view>
+      
+      <view class="record-content">
+        <view class="record-value-large">{{item.weight}} <text class="record-unit">kg</text></view>
+        
+        <view class="record-details">
+          <view class="detail-item" wx:if="{{item.bmi}}">
+            <view class="detail-label">BMI</view>
+            <view class="detail-value">{{item.bmi}}</view>
+          </view>
+          
+          <view class="detail-item">
+            <view class="detail-label">测量时间</view>
+            <view class="detail-value">{{item.timeFormatted}}</view>
+          </view>
+        </view>
+        
+        <view class="record-note" wx:if="{{item.note}}">
+          <view class="note-label">备注</view>
+          <view class="note-content">{{item.note}}</view>
+        </view>
+      </view>
+      
+      <view class="record-actions">
+        <view class="action-button" bindtap="viewDetail" data-id="{{item.timestamp}}">
+          <van-icon name="eye-o" size="18px" />
+          <text>查看</text>
+        </view>
+        <view class="action-button" bindtap="editRecord" data-id="{{item.timestamp}}">
+          <van-icon name="edit" size="18px" />
+          <text>编辑</text>
+        </view>
+        <view class="action-button delete" bindtap="deleteRecord" data-id="{{item.timestamp}}">
+          <van-icon name="delete-o" size="18px" />
+          <text>删除</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 大便记录 -->
+  <block wx:elif="{{recordType === 'stool'}}">
+    <view class="card" wx:for="{{stoolRecords}}" wx:key="timestamp">
+      <view class="record-header">
+        <view class="record-date">{{item.dateFormatted}}</view>
+        <view class="record-status {{item.statusClass}}">{{item.statusText}}</view>
+      </view>
+      
+      <view class="record-content">
+        <view class="record-value-large">类型 {{item.type}}</view>
+        
+        <view class="record-details">
+          <view class="detail-item">
+            <view class="detail-label">时间</view>
+            <view class="detail-value">{{item.timeFormatted}}</view>
+          </view>
+          
+          <view class="detail-item" wx:if="{{item.color}}">
+            <view class="detail-label">颜色</view>
+            <view class="detail-value">{{item.color}}</view>
+          </view>
+        </view>
+        
+        <view class="record-note" wx:if="{{item.note}}">
+          <view class="note-label">备注</view>
+          <view class="note-content">{{item.note}}</view>
+        </view>
+      </view>
+      
+      <view class="record-actions">
+        <view class="action-button" bindtap="viewDetail" data-id="{{item.timestamp}}">
+          <van-icon name="eye-o" size="18px" />
+          <text>查看</text>
+        </view>
+        <view class="action-button" bindtap="editRecord" data-id="{{item.timestamp}}">
+          <van-icon name="edit" size="18px" />
+          <text>编辑</text>
+        </view>
+        <view class="action-button delete" bindtap="deleteRecord" data-id="{{item.timestamp}}">
+          <van-icon name="delete-o" size="18px" />
+          <text>删除</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 用药记录 -->
+  <block wx:elif="{{recordType === 'medication'}}">
+    <view class="card" wx:for="{{medicationRecords}}" wx:key="timestamp">
+      <view class="record-header">
+        <view class="record-date">{{item.dateFormatted}}</view>
+        <view class="record-status {{item.statusClass}}">{{item.statusText}}</view>
+      </view>
+      
+      <view class="record-content">
+        <view class="record-value-large">{{item.name}}</view>
+        
+        <view class="record-details">
+          <view class="detail-item">
+            <view class="detail-label">剂量</view>
+            <view class="detail-value">{{item.dosage}} {{item.unit}}</view>
+          </view>
+          
+          <view class="detail-item">
+            <view class="detail-label">服用时间</view>
+            <view class="detail-value">{{item.timeFormatted}}</view>
+          </view>
+        </view>
+        
+        <view class="record-note" wx:if="{{item.note}}">
+          <view class="note-label">备注</view>
+          <view class="note-content">{{item.note}}</view>
+        </view>
+      </view>
+      
+      <view class="record-actions">
+        <view class="action-button" bindtap="viewDetail" data-id="{{item.timestamp}}">
+          <van-icon name="eye-o" size="18px" />
+          <text>查看</text>
+        </view>
+        <view class="action-button" bindtap="editRecord" data-id="{{item.timestamp}}">
+          <van-icon name="edit" size="18px" />
+          <text>编辑</text>
+        </view>
+        <view class="action-button delete" bindtap="deleteRecord" data-id="{{item.timestamp}}">
+          <van-icon name="delete-o" size="18px" />
+          <text>删除</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 无记录提示 -->
+  <view class="empty-state" wx:if="{{currentRecords.length === 0}}">
+    <view class="empty-icon">
+      <van-icon name="info-o" size="48px" color="#cccccc" />
+    </view>
+    <view class="empty-text">暂无记录</view>
+    <view class="empty-subtext">点击下方"+"按钮添加新记录</view>
+  </view>
+
+  <!-- 添加记录按钮 -->
+  <view class="add-button" bindtap="addRecord">
+    <van-icon name="plus" size="24px" color="#ffffff" />
+  </view>
+</view> 

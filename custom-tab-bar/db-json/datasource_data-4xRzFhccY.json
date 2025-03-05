@@ -1,0 +1,197 @@
+{
+    "previewTableName": "medication_records-preview",
+    "publishCacheStatus": "ready",
+    "subType": "database",
+    "schema": {
+        "x-primary-column": "_id",
+        "x-kind": "tcb",
+        "x-defaultMethods": [
+            "wedaCreate",
+            "wedaUpdate",
+            "wedaDelete",
+            "wedaGetItem",
+            "wedaGetRecords",
+            "wedaGetList",
+            "wedaBatchCreate",
+            "wedaBatchUpdate",
+            "wedaBatchDelete"
+        ],
+        "type": "object",
+        "x-relatedType": "exist",
+        "x-viewId": "view-6l68tbme74",
+        "required": [],
+        "properties": {
+            "owner": {
+                "default": "",
+                "x-system": true,
+                "x-id": "225ee70",
+                "name": "owner",
+                "format": "father-son",
+                "pattern": "",
+                "x-index": 4,
+                "title": "所有人",
+                "type": "string",
+                "x-unique": false,
+                "x-parent": {
+                    "fatherAction": "judge",
+                    "type": "father-son",
+                    "parentDataSourceName": "sys_user"
+                }
+            },
+            "dosage": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "8b693389",
+                "format": "",
+                "description": "剂量",
+                "type": "string",
+                "x-index": 4,
+                "title": "dosage",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "note": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "29953b85",
+                "format": "",
+                "description": "备注",
+                "type": "string",
+                "x-index": 8,
+                "title": "note",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "createdAt": {
+                "default": 0,
+                "x-system": true,
+                "x-id": "8a4f387",
+                "format": "datetime",
+                "x-index": 2,
+                "type": "number",
+                "title": "创建时间",
+                "x-unique": false
+            },
+            "datetime": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "841743d1",
+                "format": "datetime",
+                "description": "业务时间",
+                "type": "number",
+                "x-index": 6,
+                "title": "datetime",
+                "x-unique": false
+            },
+            "createBy": {
+                "default": "",
+                "x-system": true,
+                "x-id": "3d9428f",
+                "name": "createBy",
+                "format": "father-son",
+                "pattern": "",
+                "x-index": 5,
+                "type": "string",
+                "title": "创建人",
+                "x-unique": false,
+                "x-parent": {
+                    "fatherAction": "judge",
+                    "type": "father-son",
+                    "parentDataSourceName": "sys_user"
+                }
+            },
+            "updateBy": {
+                "default": "",
+                "x-system": true,
+                "x-id": "93a079a",
+                "name": "updateBy",
+                "format": "father-son",
+                "pattern": "",
+                "x-index": 6,
+                "type": "string",
+                "title": "修改人",
+                "x-unique": false,
+                "x-parent": {
+                    "fatherAction": "judge",
+                    "type": "father-son",
+                    "parentDataSourceName": "sys_user"
+                }
+            },
+            "_departmentList": {
+                "default": "",
+                "x-system": true,
+                "x-id": "202bd8b",
+                "format": "",
+                "name": "_departmentList",
+                "title": "所属部门",
+                "type": "array",
+                "x-index": 7,
+                "items": {
+                    "type": "string"
+                },
+                "x-unique": false
+            },
+            "_openid": {
+                "default": "",
+                "x-system": true,
+                "x-id": "ab916e8",
+                "name": "_openid",
+                "format": "",
+                "pattern": "",
+                "description": "仅微信云开发下使用",
+                "x-index": 45,
+                "title": "记录创建者",
+                "type": "string",
+                "x-unique": false
+            },
+            "_id": {
+                "default": "",
+                "x-system": true,
+                "x-id": "eda633b",
+                "format": "",
+                "pattern": "",
+                "x-index": 1,
+                "type": "string",
+                "title": "数据标识",
+                "x-unique": true
+            },
+            "medicine_name": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "749389b2",
+                "format": "",
+                "description": "药物名称",
+                "type": "string",
+                "x-index": 2,
+                "title": "medicine_name",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "updatedAt": {
+                "default": 0,
+                "x-system": true,
+                "x-id": "ebf9601",
+                "format": "datetime",
+                "x-index": 3,
+                "title": "更新时间",
+                "type": "number",
+                "x-unique": false
+            }
+        }
+    },
+    "dbInstanceType": "FLEXDB",
+    "title": "medication_records",
+    "name": "medication_records",
+    "dbLinkType": "internal",
+    "tableNameRule": "only_name",
+    "type": "database",
+    "childDataSourceNames": null,
+    "updateTime": "2025-03-05T07:44:04",
+    "publishedTableName": "medication_records",
+    "id": "data-4xRzFhccY",
+    "dbSourceType": "internal_flexdb",
+    "methods": [],
+    "fun": "{\"onlineVersion\": 2, \"previewVersion\": 1, \"onlinePublishAt\": 1741160644482, \"prviewPublishAt\": 1741160641925}",
+    "publishStatus": 1,
+    "configuration": {}
+}

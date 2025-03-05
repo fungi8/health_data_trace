@@ -1,0 +1,197 @@
+{
+    "previewTableName": "stool_records-preview",
+    "publishCacheStatus": "ready",
+    "subType": "database",
+    "schema": {
+        "x-primary-column": "_id",
+        "x-kind": "tcb",
+        "x-defaultMethods": [
+            "wedaCreate",
+            "wedaUpdate",
+            "wedaDelete",
+            "wedaGetItem",
+            "wedaGetRecords",
+            "wedaGetList",
+            "wedaBatchCreate",
+            "wedaBatchUpdate",
+            "wedaBatchDelete"
+        ],
+        "type": "object",
+        "x-relatedType": "exist",
+        "x-viewId": "view-6l68nb7la8",
+        "required": [],
+        "properties": {
+            "owner": {
+                "default": "",
+                "x-system": true,
+                "x-id": "661b833",
+                "name": "owner",
+                "format": "father-son",
+                "pattern": "",
+                "x-index": 4,
+                "title": "所有人",
+                "type": "string",
+                "x-unique": false,
+                "x-parent": {
+                    "fatherAction": "judge",
+                    "type": "father-son",
+                    "parentDataSourceName": "sys_user"
+                }
+            },
+            "note": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "32d4c73a",
+                "format": "",
+                "description": "备注",
+                "type": "string",
+                "x-index": 8,
+                "title": "note",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "createdAt": {
+                "default": 0,
+                "x-system": true,
+                "x-id": "705464c",
+                "format": "datetime",
+                "x-index": 2,
+                "type": "number",
+                "title": "创建时间",
+                "x-unique": false
+            },
+            "datetime": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "e5c59fc2",
+                "format": "datetime",
+                "description": "业务时间",
+                "type": "number",
+                "x-index": 6,
+                "title": "datetime",
+                "x-unique": false
+            },
+            "createBy": {
+                "default": "",
+                "x-system": true,
+                "x-id": "0f4b05e",
+                "name": "createBy",
+                "format": "father-son",
+                "pattern": "",
+                "x-index": 5,
+                "type": "string",
+                "title": "创建人",
+                "x-unique": false,
+                "x-parent": {
+                    "fatherAction": "judge",
+                    "type": "father-son",
+                    "parentDataSourceName": "sys_user"
+                }
+            },
+            "color": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "f5852d75",
+                "format": "",
+                "description": "颜色",
+                "type": "string",
+                "x-index": 4,
+                "title": "color",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "updateBy": {
+                "default": "",
+                "x-system": true,
+                "x-id": "93a079a",
+                "name": "updateBy",
+                "format": "father-son",
+                "pattern": "",
+                "x-index": 6,
+                "type": "string",
+                "title": "修改人",
+                "x-unique": false,
+                "x-parent": {
+                    "fatherAction": "judge",
+                    "type": "father-son",
+                    "parentDataSourceName": "sys_user"
+                }
+            },
+            "_departmentList": {
+                "default": "",
+                "x-system": true,
+                "x-id": "378d40b",
+                "format": "",
+                "name": "_departmentList",
+                "title": "所属部门",
+                "type": "array",
+                "x-index": 7,
+                "items": {
+                    "type": "string"
+                },
+                "x-unique": false
+            },
+            "_openid": {
+                "default": "",
+                "x-system": true,
+                "x-id": "e05b2cb",
+                "name": "_openid",
+                "format": "",
+                "pattern": "",
+                "description": "仅微信云开发下使用",
+                "x-index": 45,
+                "title": "记录创建者",
+                "type": "string",
+                "x-unique": false
+            },
+            "_id": {
+                "default": "",
+                "x-system": true,
+                "x-id": "ac7e49c",
+                "format": "",
+                "pattern": "",
+                "x-index": 1,
+                "type": "string",
+                "title": "数据标识",
+                "x-unique": true
+            },
+            "type": {
+                "x-required": false,
+                "x-keyPath": "",
+                "x-id": "472da56d",
+                "format": "",
+                "description": "类型",
+                "type": "string",
+                "x-index": 2,
+                "title": "type",
+                "x-unique": false,
+                "maxLength": 4000
+            },
+            "updatedAt": {
+                "default": 0,
+                "x-system": true,
+                "x-id": "7284e7a",
+                "format": "datetime",
+                "x-index": 3,
+                "title": "更新时间",
+                "type": "number",
+                "x-unique": false
+            }
+        }
+    },
+    "dbInstanceType": "FLEXDB",
+    "title": "stool_records",
+    "name": "stool_records",
+    "dbLinkType": "internal",
+    "tableNameRule": "only_name",
+    "type": "database",
+    "childDataSourceNames": null,
+    "updateTime": "2025-03-05T07:42:35",
+    "publishedTableName": "stool_records",
+    "id": "data-4xRzahDcd",
+    "dbSourceType": "internal_flexdb",
+    "methods": [],
+    "fun": "{\"onlineVersion\": 2, \"previewVersion\": 1, \"onlinePublishAt\": 1741160555634, \"prviewPublishAt\": 1741160553118}",
+    "publishStatus": 1,
+    "configuration": {}
+}

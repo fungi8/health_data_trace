@@ -1,0 +1,136 @@
+<view class="container">
+  <view class="profile-header">
+    <view class="avatar-container" bindtap="getUserProfile">
+      <image class="avatar" src="{{userInfo.avatarUrl || '/assets/images/default-avatar.png'}}" mode="aspectFill"></image>
+      <view class="avatar-edit-hint">点击授权</view>
+    </view>
+    <view class="user-info">
+      <view class="user-name" bindtap="editUserInfo" data-field="name">
+        <text>{{userInfo.name || '点击设置姓名'}}</text>
+        <text class="edit-icon">✏️</text>
+      </view>
+      <view class="user-details">
+        <view class="detail-item" bindtap="editUserInfo" data-field="gender">
+          <text class="label">性别</text>
+          <text class="value">{{userInfo.gender || '未设置'}} <text class="edit-icon">✏️</text></text>
+        </view>
+        <view class="detail-item" bindtap="editUserInfo" data-field="age">
+          <text class="label">年龄</text>
+          <text class="value">{{userInfo.age ? userInfo.age + '岁' : '未设置'}} <text class="edit-icon">✏️</text></text>
+        </view>
+        <view class="detail-item" bindtap="editUserInfo" data-field="height">
+          <text class="label">身高</text>
+          <text class="value">{{userInfo.height ? userInfo.height + 'cm' : '未设置'}} <text class="edit-icon">✏️</text></text>
+        </view>
+        <view class="detail-item" bindtap="editUserInfo" data-field="weight">
+          <text class="label">体重</text>
+          <text class="value">{{userInfo.weight ? userInfo.weight + 'kg' : '未设置'}} <text class="edit-icon">✏️</text></text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="health-summary">
+    <view class="summary-item">
+      <text class="summary-value">{{recordCount}}</text>
+      <text class="summary-label">记录总数</text>
+    </view>
+    <view class="summary-item">
+      <text class="summary-value">{{recordDays}}</text>
+      <text class="summary-label">记录天数</text>
+    </view>
+    <view class="summary-item">
+      <text class="summary-value">{{continuousDays}}</text>
+      <text class="summary-label">连续记录</text>
+    </view>
+  </view>
+  
+  <view class="section-title">健康目标</view>
+  
+  <view class="health-goals">
+    <view class="goal-item" bindtap="editHealthGoal" data-field="targetWeight">
+      <view class="goal-icon">⚖️</view>
+      <view class="goal-content">
+        <text class="goal-label">目标体重</text>
+        <text class="goal-value">{{healthGoals.targetWeight ? healthGoals.targetWeight + 'kg' : '未设置'}}</text>
+      </view>
+      <text class="edit-icon">✏️</text>
+    </view>
+    <view class="goal-item" bindtap="editHealthGoal" data-field="targetBloodPressure">
+      <view class="goal-icon">❤️</view>
+      <view class="goal-content">
+        <text class="goal-label">目标血压</text>
+        <text class="goal-value">{{healthGoals.targetBloodPressure || '未设置'}}</text>
+      </view>
+      <text class="edit-icon">✏️</text>
+    </view>
+    <view class="goal-item" bindtap="editHealthGoal" data-field="waterIntake">
+      <view class="goal-icon">💧</view>
+      <view class="goal-content">
+        <text class="goal-label">每日饮水量</text>
+        <text class="goal-value">{{healthGoals.waterIntake ? healthGoals.waterIntake + 'ml' : '未设置'}}</text>
+      </view>
+      <text class="edit-icon">✏️</text>
+    </view>
+  </view>
+  
+  <view class="section-title">应用设置</view>
+  
+  <view class="card">
+    <van-cell-group>
+      <van-cell title="提醒设置" is-link bindtap="navigateTo" data-url="/pages/reminders/reminders" />
+      <van-cell title="数据管理" is-link bindtap="navigateTo" data-url="/pages/data-management/data-management" />
+      <van-cell title="隐私设置" is-link bindtap="navigateTo" data-url="/pages/privacy-settings/privacy-settings" />
+      <van-cell title="关于我们" is-link bindtap="showAbout" />
+    </van-cell-group>
+  </view>
+  
+  <view class="action-buttons">
+    <button class="btn-secondary" bindtap="exportData">导出数据</button>
+    <button class="btn-secondary" bindtap="clearData">清除数据</button>
+    <button class="btn-secondary" bindtap="showAbout">关于我们</button>
+  </view>
+  
+  <!-- 编辑弹窗 -->
+  <view class="edit-popup {{showEditPopup ? 'show' : ''}}">
+    <view class="edit-popup-mask" bindtap="closeEditPopup"></view>
+    <view class="edit-popup-content">
+      <view class="edit-popup-header">
+        <text class="edit-popup-title">编辑{{editTitle}}</text>
+        <text class="edit-popup-close" bindtap="closeEditPopup">×</text>
+      </view>
+      
+      <view class="edit-popup-body">
+        <!-- 性别选择 -->
+        <block wx:if="{{currentEditField === 'gender'}}">
+          <view class="radio-group">
+            <view class="radio-item {{tempEditValue === '男' ? 'active' : ''}}" bindtap="onRadioClick" data-name="男">
+              <text class="radio-icon">{{tempEditValue === '男' ? '●' : '○'}}</text>
+              <text class="radio-label">男</text>
+            </view>
+            <view class="radio-item {{tempEditValue === '女' ? 'active' : ''}}" bindtap="onRadioClick" data-name="女">
+              <text class="radio-icon">{{tempEditValue === '女' ? '●' : '○'}}</text>
+              <text class="radio-label">女</text>
+            </view>
+          </view>
+        </block>
+        
+        <!-- 其他字段的输入框 -->
+        <block wx:else>
+          <input 
+            class="edit-input" 
+            type="{{currentEditField === 'age' || currentEditField === 'height' || currentEditField === 'weight' || currentEditField === 'targetWeight' || currentEditField === 'waterIntake' ? 'digit' : 'text'}}" 
+            value="{{tempEditValue}}"
+            placeholder="请输入{{editTitle}}"
+            bindinput="onFieldChange"
+          />
+        </block>
+      </view>
+      
+      <view class="edit-popup-footer">
+        <button class="btn-cancel" bindtap="closeEditPopup">取消</button>
+        <button class="btn-confirm" bindtap="saveEdit">保存</button>
+      </view>
+    </view>
+  </view>
+</view> 

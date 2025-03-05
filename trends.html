@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>趋势分析 - 健康管理</title>
+    <!-- 引入 Ant Design 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.15/antd.min.css" />
+    <!-- 引入 Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- 引入 ECharts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2D89EF;
+            --warning-color: #D13438;
+            --success-color: #107C10;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --secondary-text: #666666;
+            --border-radius: 8px;
+            --spacing-unit: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-unit);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            padding: calc(var(--spacing-unit) * 2) 0;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .page-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--secondary-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 calc(var(--spacing-unit) * 2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title-text {
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin: 0 0 calc(var(--spacing-unit) * 2);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .chart-container.large {
+            height: 400px;
+        }
+
+        .time-filter {
+            display: flex;
+            gap: calc(var(--spacing-unit));
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            overflow-x: auto;
+            padding-bottom: calc(var(--spacing-unit));
+        }
+
+        .time-option {
+            padding: calc(var(--spacing-unit)) calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: calc(var(--border-radius) / 2);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .time-option.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .data-selector {
+            display: flex;
+            gap: calc(var(--spacing-unit));
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            overflow-x: auto;
+            padding-bottom: calc(var(--spacing-unit));
+        }
+
+        .data-option {
+            padding: calc(var(--spacing-unit)) calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: calc(var(--border-radius) / 2);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .data-option.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: calc(var(--spacing-unit) * 1.5);
+        }
+
+        .insight-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(45, 137, 239, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: calc(var(--spacing-unit) * 1.5);
+            flex-shrink: 0;
+        }
+
+        .insight-content {
+            flex: 1;
+        }
+
+        .insight-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+
+        .insight-description {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .correlation-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: calc(var(--spacing-unit) * 2);
+            margin-top: calc(var(--spacing-unit) * 2);
+        }
+
+        .correlation-item {
+            background-color: rgba(45, 137, 239, 0.05);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 1.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .correlation-value {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--primary-color);
+        }
+
+        .correlation-label {
+            font-size: 12px;
+            color: var(--secondary-text);
+            text-align: center;
+        }
+
+        .correlation-strong {
+            color: var(--success-color);
+        }
+
+        .correlation-moderate {
+            color: #FFB900;
+        }
+
+        .correlation-weak {
+            color: var(--warning-color);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-background);
+            display: flex;
+            justify-content: space-around;
+            padding: calc(var(--spacing-unit)) 0;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--secondary-text);
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            margin-bottom: 4px;
+        }
+
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+                --secondary-text: #a0a0a0;
+            }
+
+            .time-option, .data-option {
+                border-color: #444;
+            }
+
+            .correlation-item {
+                background-color: rgba(45, 137, 239, 0.1);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-unit);
+            }
+
+            .correlation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-button" onclick="window.location.href='dashboard.html'">
+                <span class="material-icons-round">arrow_back</span>
+            </button>
+            <h1 class="page-title">
+                <span class="material-icons-round">trending_up</span>
+                趋势分析
+            </h1>
+            <div style="width: 24px;"></div> <!-- 占位，保持标题居中 -->
+        </div>
+
+        <div class="time-filter">
+            <div class="time-option" data-period="month">最近一个月</div>
+            <div class="time-option active" data-period="three-months">最近三个月</div>
+            <div class="time-option" data-period="six-months">最近六个月</div>
+            <div class="time-option" data-period="year">最近一年</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-text">
+                    <span class="material-icons-round">trending_up</span>
+                    长期健康趋势
+                </div>
+            </div>
+            <div class="card-subtitle">查看您的健康数据长期变化趋势</div>
+            
+            <div class="data-selector">
+                <div class="data-option active" data-type="blood-pressure">血压</div>
+                <div class="data-option" data-type="weight">体重</div>
+                <div class="data-option" data-type="stool">排便</div>
+                <div class="data-option" data-type="medication">用药</div>
+            </div>
+            
+            <div class="chart-container large" id="trendChart"></div>
+            
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <span class="material-icons-round">insights</span>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">血压趋势分析</div>
+                    <div class="insight-description">您的血压在过去三个月总体呈下降趋势，这表明您的健康状况正在改善。继续保持良好的生活习惯和按时服药。</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-text">
+                    <span class="material-icons-round">compare_arrows</span>
+                    数据相关性分析
+                </div>
+            </div>
+            <div class="card-subtitle">了解不同健康指标之间的关联</div>
+            
+            <div class="chart-container" id="correlationChart"></div>
+            
+            <div class="correlation-grid">
+                <div class="correlation-item">
+                    <div class="correlation-value correlation-strong">0.82</div>
+                    <div class="correlation-label">体重与血压相关性</div>
+                </div>
+                <div class="correlation-item">
+                    <div class="correlation-value correlation-moderate">0.65</div>
+                    <div class="correlation-label">用药与血压相关性</div>
+                </div>
+                <div class="correlation-item">
+                    <div class="correlation-value correlation-weak">0.32</div>
+                    <div class="correlation-label">排便与体重相关性</div>
+                </div>
+                <div class="correlation-item">
+                    <div class="correlation-value correlation-moderate">0.58</div>
+                    <div class="correlation-label">用药与排便相关性</div>
+                </div>
+            </div>
+            
+            <div class="insight-item" style="margin-top: 16px;">
+                <div class="insight-icon">
+                    <span class="material-icons-round">lightbulb</span>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">关键发现</div>
+                    <div class="insight-description">您的体重与血压呈强相关性，体重每增加1kg，收缩压平均上升约2.5mmHg。建议通过控制体重来辅助血压管理。</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-text">
+                    <span class="material-icons-round">calendar_month</span>
+                    周期性分析
+                </div>
+            </div>
+            <div class="card-subtitle">发现您健康数据的周期性变化</div>
+            
+            <div class="chart-container" id="cyclicalChart"></div>
+            
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <span class="material-icons-round">update</span>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">周期性模式</div>
+                    <div class="insight-description">您的血压在每周一和周五有轻微升高的趋势，可能与工作压力相关。建议在这些日子特别注意放松和减压。</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-text">
+                    <span class="material-icons-round">psychology</span>
+                    预测分析
+                </div>
+            </div>
+            <div class="card-subtitle">基于历史数据的健康趋势预测</div>
+            
+            <div class="chart-container" id="predictionChart"></div>
+            
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <span class="material-icons-round">trending_up</span>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">未来趋势预测</div>
+                    <div class="insight-description">如果保持当前的生活方式和用药习惯，预计您的血压将在未来3个月内保持稳定，并可能进一步改善。</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部导航栏 -->
+        <div style="height: 70px;"></div> <!-- 占位，防止内容被底部导航栏遮挡 -->
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <span class="material-icons-round nav-icon">home</span>
+            <span>首页</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <span class="material-icons-round nav-icon">history</span>
+            <span>历史</span>
+        </a>
+        <a href="reports.html" class="nav-item active">
+            <span class="material-icons-round nav-icon">analytics</span>
+            <span>报告</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <span class="material-icons-round nav-icon">person</span>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 时间筛选选项点击事件
+            const timeOptions = document.querySelectorAll('.time-option');
+            timeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    timeOptions.forEach(o => o.classList.remove('active'));
+                    this.classList.add('active');
+                    updateCharts(this.dataset.period);
+                });
+            });
+            
+            // 数据类型选择事件
+            const dataOptions = document.querySelectorAll('.data-option');
+            dataOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    dataOptions.forEach(o => o.classList.remove('active'));
+                    this.classList.add('active');
+                    updateTrendChart(this.dataset.type);
+                });
+            });
+            
+            // 初始化图表
+            initCharts();
+        });
+        
+        function initCharts() {
+            // 长期趋势图表
+            const trendChart = echarts.init(document.getElementById('trendChart'));
+            const trendOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        return params[0].axisValue + '<br/>' +
+                               '收缩压: ' + params[0].data + ' mmHg<br/>' +
+                               '舒张压: ' + params[1].data + ' mmHg';
+                    }
+                },
+                legend: {
+                    data: ['收缩压', '舒张压'],
+                    bottom: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    top: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['3月', '4月', '5月']
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 60,
+                    max: 160
+                },
+                series: [
+                    {
+                        name: '收缩压',
+                        type: 'line',
+                        data: [135, 128, 122],
+                        smooth: true,
+                        lineStyle: {
+                            color: '#2D89EF',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#2D89EF'
+                        },
+                        symbolSize: 8
+                    },
+                    {
+                        name: '舒张压',
+                        type: 'line',
+                        data: [88, 84, 80],
+                        smooth: true,
+                        lineStyle: {
+                            color: '#5FB760',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#5FB760'
+                        },
+                        symbolSize: 8
+                    }
+                ],
+                markLine: {
+                    silent: true,
+                    lineStyle: {
+                        color: '#D13438',
+                        type: 'dashed'
+                    },
+                    data: [
+                        {
+                            yAxis: 140,
+                            name: '高压警戒线'
+                        },
+                        {
+                            yAxis: 90,
+                            name: '低压警戒线'
+                        }
+                    ]
+                }
+            };
+            trendChart.setOption(trendOption);
+            
+            // 相关性图表
+            const correlationChart = echarts.init(document.getElementById('correlationChart'));
+            const correlationOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '10%',
+                    top: '10%',
+                    containLabel: true
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ['3/1', '3/15', '4/1', '4/15', '5/1', '5/15'],
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '体重',
+                        min: 70,
+                        max: 75,
+                        position: 'left',
+                        axisLine: {
+                            lineStyle: {
+                                color: '#5FB760'
+                            }
+                        },
+                        axisLabel: {
+                            formatter: '{value} kg'
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '血压',
+                        min: 110,
+                        max: 140,
+                        position: 'right',
+                        axisLine: {
+                            lineStyle: {
+                                color: '#2D89EF'
+                            }
+                        },
+                        axisLabel: {
+                            formatter: '{value} mmHg'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '体重',
+                        type: 'bar',
+                        data: [74.2, 73.8, 73.5, 72.9, 72.5, 72.3],
+                        itemStyle: {
+                            color: '#5FB760'
+                        }
+                    },
+                    {
+                        name: '收缩压',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: [138, 135, 132, 128, 125, 122],
+                        lineStyle: {
+                            color: '#2D89EF'
+                        },
+                        itemStyle: {
+                            color: '#2D89EF'
+                        }
+                    }
+                ]
+            };
+            correlationChart.setOption(correlationOption);
+            
+            // 周期性图表
+            const cyclicalChart = echarts.init(document.getElementById('cyclicalChart'));
+            const cyclicalOption = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                    bottom: 0
+                },
+                radar: {
+                    indicator: [
+                        { name: '收缩压', max: 140 },
+                        { name: '舒张压', max: 90 },
+                        { name: '心率', max: 100 },
+                        { name: '体重', max: 75 },
+                        { name: '用药依从性', max: 100 }
+                    ]
+                },
+                series: [
+                    {
+                        type: 'radar',
+                        data: [
+                            {
+                                value: [130, 85, 78, 72.5, 90],
+                                name: '周一',
+                                areaStyle: {
+                                    color: 'rgba(45, 137, 239, 0.2)'
+                                },
+                                lineStyle: {
+                                    color: '#2D89EF'
+                                },
+                                itemStyle: {
+                                    color: '#2D89EF'
+                                }
+                            },
+                            {
+                                value: [125, 82, 75, 72.3, 95],
+                                name: '周三',
+                                areaStyle: {
+                                    color: 'rgba(95, 183, 96, 0.2)'
+                                },
+                                lineStyle: {
+                                    color: '#5FB760'
+                                },
+                                itemStyle: {
+                                    color: '#5FB760'
+                                }
+                            },
+                            {
+                                value: [128, 84, 77, 72.4, 85],
+                                name: '周五',
+                                areaStyle: {
+                                    color: 'rgba(255, 185, 0, 0.2)'
+                                },
+                                lineStyle: {
+                                    color: '#FFB900'
+                                },
+                                itemStyle: {
+                                    color: '#FFB900'
+                                }
+                            }
+                        ]
+                    }
+                ]
+            };
+            cyclicalChart.setOption(cyclicalOption);
+            
+            // 预测图表
+            const predictionChart = echarts.init(document.getElementById('predictionChart'));
+            const predictionOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        return params[0].axisValue + '<br/>' +
+                               '收缩压: ' + params[0].data + ' mmHg<br/>';
+                    }
+                },
+                legend: {
+                    data: ['历史数据', '预测数据'],
+                    bottom: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    top: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['3月', '4月', '5月', '6月', '7月', '8月']
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 110,
+                    max: 140
+                },
+                series: [
+                    {
+                        name: '历史数据',
+                        type: 'line',
+                        data: [135, 128, 122, null, null, null],
+                        smooth: true,
+                        lineStyle: {
+                            color: '#2D89EF',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#2D89EF'
+                        },
+                        symbolSize: 8
+                    },
+                    {
+                        name: '预测数据',
+                        type: 'line',
+                        data: [null, null, 122, 120, 118, 117],
+                        smooth: true,
+                        lineStyle: {
+                            color: '#5FB760',
+                            width: 3,
+                            type: 'dashed'
+                        },
+                        itemStyle: {
+                            color: '#5FB760'
+                        },
+                        symbolSize: 8
+                    }
+                ],
+                markArea: {
+                    silent: true,
+                    itemStyle: {
+                        color: 'rgba(95, 183, 96, 0.1)'
+                    },
+                    data: [[{
+                        xAxis: '5月'
+                    }, {
+                        xAxis: '8月'
+                    }]]
+                }
+            };
+            predictionChart.setOption(predictionOption);
+            
+            // 窗口大小变化时重新调整图表大小
+            window.addEventListener('resize', function() {
+                trendChart.resize();
+                correlationChart.resize();
+                cyclicalChart.resize();
+                predictionChart.resize();
+            });
+        }
+        
+        function updateCharts(period) {
+            // 这里可以根据选择的时间段更新图表数据
+            console.log('更新图表数据，时间段：', period);
+            // 实际应用中，这里应该从后端获取对应时间段的数据
+            // 然后更新各个图表
+        }
+        
+        function updateTrendChart(type) {
+            // 这里可以根据选择的数据类型更新趋势图表
+            console.log('更新趋势图表，数据类型：', type);
+            // 实际应用中，这里应该从后端获取对应类型的数据
+            // 然后更新趋势图表
+        }
+    </script>
+</body>
+</html> 

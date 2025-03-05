@@ -1,0 +1,75 @@
+{
+  "pages": [
+    "pages/dashboard/dashboard",
+    "pages/history/history",
+    "pages/reports/reports",
+    "pages/profile/profile",
+    "pages/blood-pressure/blood-pressure",
+    "pages/weight-record/weight-record",
+    "pages/stool-record/stool-record",
+    "pages/medication/medication",
+    "pages/reminders/reminders",
+    "pages/reminders-create/reminders-create",
+    "pages/data-visualization/data-visualization",
+    "pages/data-management/data-management",
+    "pages/bristol-stool-chart/bristol-stool-chart",
+    "pages/detail/detail",
+    "pages/register/register"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "健康数据追踪",
+    "navigationBarBackgroundColor": "#ffffff"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#999999",
+    "selectedColor": "#2D89EF",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/dashboard/dashboard",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/history/history",
+        "text": "历史"
+      },
+      {
+        "pagePath": "pages/reports/reports",
+        "text": "报告"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userInfo": {
+      "desc": "您的个人信息将用于完善用户资料"
+    }
+  },
+  "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "van-cell": "@vant/weapp/cell/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-field": "@vant/weapp/field/index",
+    "van-switch": "@vant/weapp/switch/index",
+    "van-progress": "@vant/weapp/progress/index",
+    "van-card": "@vant/weapp/card/index",
+    "van-tab": "@vant/weapp/tab/index",
+    "van-tabs": "@vant/weapp/tabs/index",
+    "van-tabbar": "@vant/weapp/tabbar/index",
+    "van-tabbar-item": "@vant/weapp/tabbar-item/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "van-popup": "@vant/weapp/popup/index",
+    "van-datetime-picker": "@vant/weapp/datetime-picker/index",
+    "van-picker": "@vant/weapp/picker/index"
+  }
+}

@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康报告 - 健康管理</title>
+    <!-- 引入 Ant Design 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.15/antd.min.css" />
+    <!-- 引入 Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- 引入 ECharts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2D89EF;
+            --warning-color: #D13438;
+            --success-color: #107C10;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --secondary-text: #666666;
+            --border-radius: 8px;
+            --spacing-unit: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-unit);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            padding: calc(var(--spacing-unit) * 2) 0;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .page-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--secondary-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 calc(var(--spacing-unit) * 2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title-text {
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin: 0 0 calc(var(--spacing-unit) * 2);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 250px;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .summary-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: calc(var(--spacing-unit) * 2);
+        }
+
+        .summary-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .summary-value {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: var(--secondary-text);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .status-indicator.normal {
+            background-color: var(--success-color);
+        }
+
+        .status-indicator.warning {
+            background-color: var(--warning-color);
+        }
+
+        .status-indicator.caution {
+            background-color: #FFB900;
+        }
+
+        .status-text {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-text.normal {
+            color: var(--success-color);
+        }
+
+        .status-text.warning {
+            color: var(--warning-color);
+        }
+
+        .status-text.caution {
+            color: #FFB900;
+        }
+
+        .time-filter {
+            display: flex;
+            gap: calc(var(--spacing-unit));
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            overflow-x: auto;
+            padding-bottom: calc(var(--spacing-unit));
+        }
+
+        .time-option {
+            padding: calc(var(--spacing-unit)) calc(var(--spacing-unit) * 1.5);
+            border: 1px solid #d9d9d9;
+            border-radius: calc(var(--border-radius) / 2);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .time-option.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: calc(var(--spacing-unit) * 1.5);
+        }
+
+        .insight-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(45, 137, 239, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: calc(var(--spacing-unit) * 1.5);
+            flex-shrink: 0;
+        }
+
+        .insight-content {
+            flex: 1;
+        }
+
+        .insight-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+
+        .insight-description {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: calc(var(--spacing-unit));
+            margin-top: calc(var(--spacing-unit) * 2);
+        }
+
+        .action-button {
+            flex: 1;
+            padding: calc(var(--spacing-unit) * 1.5);
+            border: none;
+            border-radius: calc(var(--border-radius) / 2);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .action-button.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .action-button.secondary {
+            background-color: #f0f0f0;
+            color: var(--text-color);
+        }
+
+        .action-button .material-icons-round {
+            margin-right: 4px;
+            font-size: 18px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-background);
+            display: flex;
+            justify-content: space-around;
+            padding: calc(var(--spacing-unit)) 0;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--secondary-text);
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            margin-bottom: 4px;
+        }
+
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+                --secondary-text: #a0a0a0;
+            }
+
+            .time-option {
+                border-color: #444;
+            }
+
+            .action-button.secondary {
+                background-color: #2c2c2c;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-unit);
+            }
+
+            .summary-container {
+                flex-wrap: wrap;
+            }
+
+            .summary-item {
+                flex-basis: 50%;
+                margin-bottom: calc(var(--spacing-unit) * 2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-button" onclick="window.location.href='dashboard.html'">
+                <span class="material-icons-round">arrow_back</span>
+            </button>
+            <h1 class="page-title">
+                <span class="material-icons-round">analytics</span>
+                健康报告
+            </h1>
+            <div style="width: 24px;"></div> <!-- 占位，保持标题居中 -->
+        </div>
+
+        <div class="time-filter">
+            <div class="time-option active" data-period="week">最近一周</div>
+            <div class="time-option" data-period="month">最近一个月</div>
+            <div class="time-option" data-period="three-months">最近三个月</div>
+            <div class="time-option" data-period="six-months">最近六个月</div>
+            <div class="time-option" data-period="year">最近一年</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-text">
+                    <span class="material-icons-round">favorite</span>
+                    血压趋势
+                </div>
+                <div class="status-text normal">
+                    <span class="status-indicator normal"></span>
+                    正常
+                </div>
+            </div>
+            <div class="card-subtitle">最近一周的血压变化趋势</div>
+            <div class="chart-container" id="bloodPressureChart"></div>
+            <div class="summary-container">
+                <div class="summary-item">
+                    <div class="summary-value">120/80</div>
+                    <div class="summary-label">平均值</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">135/85</div>
+                    <div class="summary-label">最高值</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">115/75</div>
+                    <div class="summary-label">最低值</div>
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <span class="material-icons-round">lightbulb</span>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">血压稳定</div>
+                    <div class="insight-description">您的血压在过去一周保持稳定，继续保持良好的生活习惯。</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-text">
+                    <span class="material-icons-round">monitor_weight</span>
+                    体重趋势
+                </div>
+                <div class="status-text caution">
+                    <span class="status-indicator caution"></span>
+                    轻微波动
+                </div>
+            </div>
+            <div class="card-subtitle">最近一周的体重变化趋势</div>
+            <div class="chart-container" id="weightChart"></div>
+            <div class="summary-container">
+                <div class="summary-item">
+                    <div class="summary-value">72.5 kg</div>
+                    <div class="summary-label">平均值</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">73.2 kg</div>
+                    <div class="summary-label">最高值</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">71.8 kg</div>
+                    <div class="summary-label">最低值</div>
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <span class="material-icons-round">lightbulb</span>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">体重略有波动</div>
+                    <div class="insight-description">您的体重在过去一周有轻微波动，建议控制饮食并增加适量运动。</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-text">
+                    <span class="material-icons-round">spa</span>
+                    排便情况
+                </div>
+                <div class="status-text normal">
+                    <span class="status-indicator normal"></span>
+                    正常
+                </div>
+            </div>
+            <div class="card-subtitle">最近一周的排便情况分析</div>
+            <div class="chart-container" id="stoolChart"></div>
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <span class="material-icons-round">lightbulb</span>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">排便规律</div>
+                    <div class="insight-description">您的排便情况规律且正常，继续保持高纤维饮食和充足的水分摄入。</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-text">
+                    <span class="material-icons-round">medication</span>
+                    用药情况
+                </div>
+                <div class="status-text warning">
+                    <span class="status-indicator warning"></span>
+                    需要注意
+                </div>
+            </div>
+            <div class="card-subtitle">最近一周的用药情况分析</div>
+            <div class="chart-container" id="medicationChart"></div>
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <span class="material-icons-round">warning</span>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">用药提醒</div>
+                    <div class="insight-description">您在过去一周有2次漏服降压药，请务必按时服药，保持治疗的连续性。</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-text">
+                    <span class="material-icons-round">tips_and_updates</span>
+                    健康建议
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <span class="material-icons-round">restaurant</span>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">饮食建议</div>
+                    <div class="insight-description">增加蔬菜水果摄入，减少盐分和油脂摄入，有助于控制血压和体重。</div>
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <span class="material-icons-round">directions_run</span>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">运动建议</div>
+                    <div class="insight-description">每周进行至少150分钟的中等强度有氧运动，如快走、游泳或骑自行车。</div>
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <span class="material-icons-round">bedtime</span>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">睡眠建议</div>
+                    <div class="insight-description">保持规律的睡眠时间，每晚睡眠7-8小时，有助于身体恢复和血压稳定。</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="report-actions">
+            <button class="action-button primary">
+                <span class="material-icons-round">share</span>
+                分享给医生
+            </button>
+            <button class="action-button secondary">
+                <span class="material-icons-round">download</span>
+                导出报告
+            </button>
+        </div>
+
+        <!-- 底部导航栏 -->
+        <div style="height: 70px;"></div> <!-- 占位，防止内容被底部导航栏遮挡 -->
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <span class="material-icons-round nav-icon">home</span>
+            <span>首页</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <span class="material-icons-round nav-icon">history</span>
+            <span>历史</span>
+        </a>
+        <a href="reports.html" class="nav-item active">
+            <span class="material-icons-round nav-icon">analytics</span>
+            <span>报告</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <span class="material-icons-round nav-icon">person</span>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 时间筛选选项点击事件
+            const timeOptions = document.querySelectorAll('.time-option');
+            timeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    timeOptions.forEach(o => o.classList.remove('active'));
+                    this.classList.add('active');
+                    updateCharts(this.dataset.period);
+                });
+            });
+            
+            // 初始化图表
+            initCharts();
+        });
+        
+        function initCharts() {
+            // 血压图表
+            const bloodPressureChart = echarts.init(document.getElementById('bloodPressureChart'));
+            const bloodPressureOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        return params[0].axisValue + '<br/>' +
+                               '收缩压: ' + params[0].data + ' mmHg<br/>' +
+                               '舒张压: ' + params[1].data + ' mmHg';
+                    }
+                },
+                legend: {
+                    data: ['收缩压', '舒张压'],
+                    bottom: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    top: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['5/9', '5/10', '5/11', '5/12', '5/13', '5/14', '5/15']
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 60,
+                    max: 160
+                },
+                series: [
+                    {
+                        name: '收缩压',
+                        type: 'line',
+                        data: [120, 132, 125, 128, 122, 130, 120],
+                        smooth: true,
+                        lineStyle: {
+                            color: '#2D89EF'
+                        },
+                        itemStyle: {
+                            color: '#2D89EF'
+                        }
+                    },
+                    {
+                        name: '舒张压',
+                        type: 'line',
+                        data: [80, 85, 82, 83, 80, 84, 80],
+                        smooth: true,
+                        lineStyle: {
+                            color: '#5FB760'
+                        },
+                        itemStyle: {
+                            color: '#5FB760'
+                        }
+                    }
+                ],
+                markLine: {
+                    silent: true,
+                    lineStyle: {
+                        color: '#D13438',
+                        type: 'dashed'
+                    },
+                    data: [
+                        {
+                            yAxis: 140,
+                            name: '高压警戒线'
+                        },
+                        {
+                            yAxis: 90,
+                            name: '低压警戒线'
+                        }
+                    ]
+                }
+            };
+            bloodPressureChart.setOption(bloodPressureOption);
+            
+            // 体重图表
+            const weightChart = echarts.init(document.getElementById('weightChart'));
+            const weightOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        return params[0].axisValue + '<br/>' +
+                               '体重: ' + params[0].data + ' kg';
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '10%',
+                    top: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['5/9', '5/10', '5/11', '5/12', '5/13', '5/14', '5/15']
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 70,
+                    max: 75
+                },
+                series: [
+                    {
+                        type: 'line',
+                        data: [72.1, 72.3, 71.8, 72.5, 73.2, 72.8, 72.5],
+                        smooth: true,
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {
+                                    offset: 0,
+                                    color: 'rgba(45, 137, 239, 0.3)'
+                                },
+                                {
+                                    offset: 1,
+                                    color: 'rgba(45, 137, 239, 0.1)'
+                                }
+                            ])
+                        },
+                        lineStyle: {
+                            color: '#2D89EF'
+                        },
+                        itemStyle: {
+                            color: '#2D89EF'
+                        }
+                    }
+                ]
+            };
+            weightChart.setOption(weightOption);
+            
+            // 排便图表
+            const stoolChart = echarts.init(document.getElementById('stoolChart'));
+            const stoolOption = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    bottom: 0,
+                    left: 'center'
+                },
+                series: [
+                    {
+                        name: '排便类型',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        center: ['50%', '45%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '14',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: 1, name: '类型 1' },
+                            { value: 0, name: '类型 2' },
+                            { value: 1, name: '类型 3' },
+                            { value: 3, name: '类型 4' },
+                            { value: 1, name: '类型 5' },
+                            { value: 0, name: '类型 6' },
+                            { value: 0, name: '类型 7' }
+                        ]
+                    }
+                ]
+            };
+            stoolChart.setOption(stoolOption);
+            
+            // 用药图表
+            const medicationChart = echarts.init(document.getElementById('medicationChart'));
+            const medicationOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: ['已服用', '未服用'],
+                    bottom: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    top: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['5/9', '5/10', '5/11', '5/12', '5/13', '5/14', '5/15']
+                },
+                yAxis: {
+                    type: 'value',
+                    max: 3
+                },
+                series: [
+                    {
+                        name: '已服用',
+                        type: 'bar',
+                        stack: 'total',
+                        data: [2, 2, 1, 2, 2, 2, 2],
+                        itemStyle: {
+                            color: '#5FB760'
+                        }
+                    },
+                    {
+                        name: '未服用',
+                        type: 'bar',
+                        stack: 'total',
+                        data: [0, 0, 1, 0, 0, 1, 0],
+                        itemStyle: {
+                            color: '#D13438'
+                        }
+                    }
+                ]
+            };
+            medicationChart.setOption(medicationOption);
+            
+            // 窗口大小变化时重新调整图表大小
+            window.addEventListener('resize', function() {
+                bloodPressureChart.resize();
+                weightChart.resize();
+                stoolChart.resize();
+                medicationChart.resize();
+            });
+        }
+        
+        function updateCharts(period) {
+            // 这里可以根据选择的时间段更新图表数据
+            console.log('更新图表数据，时间段：', period);
+            // 实际应用中，这里应该从后端获取对应时间段的数据
+            // 然后更新各个图表
+        }
+    </script>
+</body>
+</html> 

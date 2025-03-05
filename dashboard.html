@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康管理 - 仪表盘</title>
+    <!-- 引入 Ant Design 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.15/antd.min.css" />
+    <!-- 引入 Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- 引入 ECharts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2D89EF;
+            --warning-color: #D13438;
+            --success-color: #107C10;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --secondary-text: #666666;
+            --border-radius: 8px;
+            --spacing-unit: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-unit);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            padding: calc(var(--spacing-unit) * 2) 0;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: calc(var(--spacing-unit));
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-status {
+            font-size: 12px;
+            color: var(--secondary-text);
+        }
+
+        .settings-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--secondary-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .welcome-card {
+            background-color: var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            color: white;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 calc(var(--spacing-unit));
+        }
+
+        .welcome-subtitle {
+            font-size: 14px;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .welcome-decoration {
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: calc(var(--spacing-unit) * 3) 0 calc(var(--spacing-unit) * 2);
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: calc(var(--spacing-unit) * 2);
+        }
+
+        .feature-card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: rgba(45, 137, 239, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: calc(var(--spacing-unit));
+        }
+
+        .feature-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+
+        .feature-desc {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin: 0;
+        }
+
+        .recent-records {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .record-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .record-title .material-icons-round {
+            margin-right: calc(var(--spacing-unit));
+            color: var(--primary-color);
+        }
+
+        .view-all {
+            font-size: 12px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .record-item {
+            display: flex;
+            align-items: center;
+            padding: calc(var(--spacing-unit) * 1.5) 0;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .record-item:last-child {
+            border-bottom: none;
+        }
+
+        .record-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(45, 137, 239, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: calc(var(--spacing-unit) * 2);
+        }
+
+        .record-info {
+            flex: 1;
+        }
+
+        .record-value {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+
+        .record-date {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin: 0;
+        }
+
+        .record-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: calc(var(--spacing-unit));
+        }
+
+        .record-status.normal {
+            background-color: rgba(16, 124, 16, 0.1);
+            color: var(--success-color);
+        }
+
+        .record-status.warning {
+            background-color: rgba(209, 52, 56, 0.1);
+            color: var(--warning-color);
+        }
+
+        .reminder-card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            padding: calc(var(--spacing-unit) * 1.5) 0;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .reminder-item:last-child {
+            border-bottom: none;
+        }
+
+        .reminder-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(45, 137, 239, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: calc(var(--spacing-unit) * 2);
+        }
+
+        .reminder-info {
+            flex: 1;
+        }
+
+        .reminder-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+
+        .reminder-time {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin: 0;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-background);
+            display: flex;
+            justify-content: space-around;
+            padding: calc(var(--spacing-unit)) 0;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--secondary-text);
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            margin-bottom: 4px;
+        }
+
+        .add-record-button {
+            position: fixed;
+            bottom: calc(56px + var(--spacing-unit) * 2);
+            right: calc(var(--spacing-unit) * 2);
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(45, 137, 239, 0.4);
+            cursor: pointer;
+            transition: background-color 0.3s;
+            z-index: 10;
+        }
+
+        .add-record-button:hover {
+            background-color: #1a73e8;
+        }
+
+        .add-menu {
+            position: fixed;
+            bottom: calc(56px + var(--spacing-unit) * 2 + 60px);
+            right: calc(var(--spacing-unit) * 2);
+            display: none;
+            flex-direction: column;
+            gap: calc(var(--spacing-unit));
+            z-index: 10;
+        }
+
+        .add-menu.active {
+            display: flex;
+        }
+
+        .add-menu-item {
+            display: flex;
+            align-items: center;
+            background-color: var(--card-background);
+            padding: calc(var(--spacing-unit));
+            border-radius: calc(var(--spacing-unit) * 3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .add-menu-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(45, 137, 239, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: calc(var(--spacing-unit));
+        }
+
+        .add-menu-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+                --secondary-text: #a0a0a0;
+            }
+
+            .record-item, .reminder-item {
+                border-bottom-color: #333;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-unit);
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="user-profile">
+                <div class="avatar">张</div>
+                <div class="user-info">
+                    <div class="user-name">张先生</div>
+                    <div class="user-status">上次记录: 今天</div>
+                </div>
+            </div>
+            <button class="settings-button" onclick="window.location.href='settings.html'">
+                <span class="material-icons-round">settings</span>
+            </button>
+        </div>
+
+        <div class="welcome-card">
+            <h1 class="welcome-title">下午好，张先生</h1>
+            <p class="welcome-subtitle">今天是您的血压测量日，别忘了记录哦</p>
+            <div class="welcome-decoration"></div>
+        </div>
+
+        <div class="recent-records">
+            <div class="record-header">
+                <h2 class="record-title">
+                    <span class="material-icons-round">favorite</span>
+                    最近血压记录
+                </h2>
+                <a href="history.html?type=blood-pressure" class="view-all">查看全部</a>
+            </div>
+            
+            <div class="record-item">
+                <div class="record-icon">
+                    <span class="material-icons-round">favorite</span>
+                </div>
+                <div class="record-info">
+                    <div class="record-value">120/80 mmHg <span class="record-status normal">正常</span></div>
+                    <div class="record-date">今天 08:30</div>
+                </div>
+            </div>
+            
+            <div class="record-item">
+                <div class="record-icon">
+                    <span class="material-icons-round">favorite</span>
+                </div>
+                <div class="record-info">
+                    <div class="record-value">135/85 mmHg <span class="record-status warning">偏高</span></div>
+                    <div class="record-date">昨天 20:15</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="reminder-card">
+            <div class="record-header">
+                <h2 class="record-title">
+                    <span class="material-icons-round">notifications</span>
+                    今日提醒
+                </h2>
+                <a href="reminders.html" class="view-all">管理提醒</a>
+        </div>
+            
+            <div class="reminder-item">
+                <div class="reminder-icon">
+                    <span class="material-icons-round">medication</span>
+                </div>
+                <div class="reminder-info">
+                    <div class="reminder-title">服用降压药</div>
+                    <div class="reminder-time">今天 20:00</div>
+                </div>
+            </div>
+            
+            <div class="reminder-item">
+                <div class="reminder-icon">
+                    <span class="material-icons-round">favorite</span>
+                </div>
+                <div class="reminder-info">
+                    <div class="reminder-title">晚间血压测量</div>
+                    <div class="reminder-time">今天 20:30</div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">
+            <span class="material-icons-round">dashboard</span>
+            健康管理
+        </h2>
+        
+        <div class="card-grid">
+            <a href="blood-pressure.html" class="feature-card">
+                <div class="feature-icon">
+                    <span class="material-icons-round">favorite</span>
+                </div>
+                <div class="feature-title">血压记录</div>
+                <div class="feature-desc">记录和追踪血压变化</div>
+            </a>
+            
+            <a href="weight-record.html" class="feature-card">
+                <div class="feature-icon">
+                    <span class="material-icons-round">monitor_weight</span>
+                </div>
+                <div class="feature-title">体重记录</div>
+                <div class="feature-desc">记录体重和身体数据</div>
+            </a>
+            
+            <a href="stool-record.html" class="feature-card">
+                <div class="feature-icon">
+                    <span class="material-icons-round">spa</span>
+                </div>
+                <div class="feature-title">大便记录</div>
+                <div class="feature-desc">记录排便情况和特征</div>
+            </a>
+            
+            <a href="medication.html" class="feature-card">
+                <div class="feature-icon">
+                    <span class="material-icons-round">medication</span>
+                </div>
+                <div class="feature-title">用药记录</div>
+                <div class="feature-desc">记录药物使用情况</div>
+            </a>
+        </div>
+
+        <h2 class="section-title">
+            <span class="material-icons-round">analytics</span>
+            数据分析
+        </h2>
+        
+        <div class="card-grid">
+            <a href="reports.html" class="feature-card">
+                <div class="feature-icon">
+                    <span class="material-icons-round">bar_chart</span>
+                </div>
+                <div class="feature-title">健康报告</div>
+                <div class="feature-desc">查看健康数据分析</div>
+            </a>
+            
+            <a href="trends.html" class="feature-card">
+                <div class="feature-icon">
+                    <span class="material-icons-round">trending_up</span>
+                </div>
+                <div class="feature-title">趋势分析</div>
+                <div class="feature-desc">查看健康数据趋势</div>
+            </a>
+            
+            <a href="data-management.html" class="feature-card">
+                <div class="feature-icon">
+                    <span class="material-icons-round">cloud_download</span>
+                </div>
+                <div class="feature-title">数据管理</div>
+                <div class="feature-desc">导出和同步数据</div>
+            </a>
+            
+            <a href="doctor-share.html" class="feature-card">
+                <div class="feature-icon">
+                    <span class="material-icons-round">share</span>
+                </div>
+                <div class="feature-title">医生分享</div>
+                <div class="feature-desc">与医生分享健康数据</div>
+            </a>
+        </div>
+
+        <!-- 底部导航栏 -->
+        <div style="height: 70px;"></div> <!-- 占位，防止内容被底部导航栏遮挡 -->
+    </div>
+
+    <!-- 添加记录按钮和菜单 -->
+    <div class="add-menu" id="addMenu">
+        <a href="blood-pressure.html" class="add-menu-item">
+            <div class="add-menu-icon">
+                <span class="material-icons-round">favorite</span>
+            </div>
+            <div class="add-menu-text">血压记录</div>
+        </a>
+        <a href="weight-record.html" class="add-menu-item">
+            <div class="add-menu-icon">
+                <span class="material-icons-round">monitor_weight</span>
+            </div>
+            <div class="add-menu-text">体重记录</div>
+        </a>
+        <a href="stool-record.html" class="add-menu-item">
+            <div class="add-menu-icon">
+                <span class="material-icons-round">spa</span>
+            </div>
+            <div class="add-menu-text">大便记录</div>
+        </a>
+        <a href="medication.html" class="add-menu-item">
+            <div class="add-menu-icon">
+                <span class="material-icons-round">medication</span>
+        </div>
+            <div class="add-menu-text">用药记录</div>
+        </a>
+    </div>
+
+    <div class="add-record-button" id="addRecordButton">
+        <span class="material-icons-round">add</span>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item active">
+            <span class="material-icons-round nav-icon">home</span>
+            <span>首页</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <span class="material-icons-round nav-icon">history</span>
+            <span>历史</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+            <span class="material-icons-round nav-icon">analytics</span>
+            <span>报告</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <span class="material-icons-round nav-icon">person</span>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script>
+        // 添加记录按钮点击事件
+        const addRecordButton = document.getElementById('addRecordButton');
+        const addMenu = document.getElementById('addMenu');
+        
+        addRecordButton.addEventListener('click', function() {
+            addMenu.classList.toggle('active');
+        });
+        
+        // 点击其他区域关闭添加菜单
+        document.addEventListener('click', function(event) {
+            if (!addRecordButton.contains(event.target) && !addMenu.contains(event.target)) {
+                addMenu.classList.remove('active');
+            }
+        });
+        
+        // 根据时间更新问候语
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            const welcomeTitle = document.querySelector('.welcome-title');
+            
+            let greeting = '您好';
+            if (hour >= 5 && hour < 12) {
+                greeting = '早上好';
+            } else if (hour >= 12 && hour < 18) {
+                greeting = '下午好';
+            } else {
+                greeting = '晚上好';
+            }
+            
+            welcomeTitle.textContent = `${greeting}，张先生`;
+        }
+        
+        // 页面加载时更新问候语
+        document.addEventListener('DOMContentLoaded', updateGreeting);
+    </script>
+</body>
+</html> 
