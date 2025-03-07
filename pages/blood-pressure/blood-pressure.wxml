@@ -1,1 +1,127 @@
- 
+ <view class="container">
+  <view class="page-title">血压记录</view>
+  
+  <view class="card">
+    <view class="form-group">
+      <view class="form-label">收缩压 (mmHg)</view>
+      <input class="form-input" type="number" placeholder="请输入收缩压" value="{{systolic}}" bindinput="onSystolicInput" />
+    </view>
+    
+    <view class="form-group">
+      <view class="form-label">舒张压 (mmHg)</view>
+      <input class="form-input" type="number" placeholder="请输入舒张压" value="{{diastolic}}" bindinput="onDiastolicInput" />
+    </view>
+    
+    <view class="form-group">
+      <view class="form-label">脉搏 (次/分)</view>
+      <input class="form-input" type="number" placeholder="请输入脉搏" value="{{pulse}}" bindinput="onPulseInput" />
+    </view>
+    
+    <view class="form-group">
+      <view class="form-label">测量时间</view>
+      <picker mode="date" value="{{date}}" bindchange="onDateChange">
+        <view class="form-input">{{date || '请选择日期'}}</view>
+      </picker>
+    </view>
+    
+    <view class="form-group">
+      <picker mode="time" value="{{time}}" bindchange="onTimeChange">
+        <view class="form-input">{{time || '请选择时间'}}</view>
+      </picker>
+    </view>
+    
+    <view class="form-group">
+      <view class="form-label">备注</view>
+      <textarea class="form-textarea" placeholder="添加备注信息" value="{{note}}" bindinput="onNoteInput"></textarea>
+    </view>
+    
+    <button class="btn btn-primary" bindtap="saveRecord">保存记录</button>
+  </view>
+  
+  <view class="card">
+    <view class="card-header">
+      <view class="card-title">血压参考值</view>
+    </view>
+    
+    <view class="reference-table">
+      <view class="reference-row header">
+        <view class="reference-cell">分类</view>
+        <view class="reference-cell">收缩压 (mmHg)</view>
+        <view class="reference-cell">舒张压 (mmHg)</view>
+      </view>
+      
+      <view class="reference-row">
+        <view class="reference-cell">理想血压</view>
+        <view class="reference-cell">90-119</view>
+        <view class="reference-cell">60-79</view>
+      </view>
+      
+      <view class="reference-row">
+        <view class="reference-cell">正常血压</view>
+        <view class="reference-cell">120-129</view>
+        <view class="reference-cell">80-84</view>
+      </view>
+      
+      <view class="reference-row">
+        <view class="reference-cell">正常高值</view>
+        <view class="reference-cell">130-139</view>
+        <view class="reference-cell">85-89</view>
+      </view>
+      
+      <view class="reference-row">
+        <view class="reference-cell">轻度高血压</view>
+        <view class="reference-cell">140-159</view>
+        <view class="reference-cell">90-99</view>
+      </view>
+      
+      <view class="reference-row">
+        <view class="reference-cell">中度高血压</view>
+        <view class="reference-cell">160-179</view>
+        <view class="reference-cell">100-109</view>
+      </view>
+      
+      <view class="reference-row">
+        <view class="reference-cell">重度高血压</view>
+        <view class="reference-cell">≥180</view>
+        <view class="reference-cell">≥110</view>
+      </view>
+    </view>
+    
+    <view class="reference-note">
+      注：此参考值仅供参考，请遵医嘱。
+    </view>
+  </view>
+  
+  <view class="tips-card">
+    <view class="tips-title">测量小贴士</view>
+    <view class="tips-content">
+      <view class="tip-item">
+        <view class="tip-icon">
+          <van-icon name="clock-o" size="18px" color="#2D89EF" />
+        </view>
+        <view class="tip-text">测量前休息5分钟</view>
+      </view>
+      
+      <view class="tip-item">
+        <view class="tip-icon">
+          <van-icon name="coffee-o" size="18px" color="#2D89EF" />
+        </view>
+        <view class="tip-text">测量前30分钟避免吸烟、饮酒和咖啡</view>
+      </view>
+      
+      <view class="tip-item">
+        <view class="tip-icon">
+          <van-icon name="user-o" size="18px" color="#2D89EF" />
+        </view>
+        <view class="tip-text">测量时保持安静，避免说话</view>
+      </view>
+      
+      <view class="tip-item">
+        <view class="tip-icon">
+          <van-icon name="replay" size="18px" color="#2D89EF" />
+        </view>
+        <view class="tip-text">每天固定时间测量，保持记录习惯</view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -33,4 +33,4 @@
   justify-content: center;
   box-shadow: 0 8rpx 24rpx rgba(45, 137, 239, 0.4);
   z-index: 100;
-} 
+}
